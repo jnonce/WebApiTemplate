@@ -23,5 +23,12 @@ namespace webapitmpl.Controllers
         {
             return provider.Get();
         }
+
+        [HttpGet]
+        [Route("fail")]
+        public string Fail()
+        {
+            throw new InvalidTimeZoneException();
+        }    
     }
 }

@@ -16,18 +16,23 @@ namespace webapitmpl
 
         private static async Task MainAsync()
         {
-            StartOptions options = new StartOptions()
-            {
-                Port = 8999
-            };
+            StartOptions options = new StartOptions();
+            options.Urls.Add("http://localhost:8999");
 
-            using (WebApp.Start<Startup>(options))
+            using (WebApp.Start<webapitmpl.App_Start.Startup>(options))
             {
+                Log("Server listening for connections");
                 await OnComplete();
-                await Task.Delay(1000);
+
+                Log("Shutdown registered");
             }
 
-            await Task.Delay(1000);
+            await Task.Delay(1500);
+        }
+
+        private static void Log(string p)
+        {
+            Console.WriteLine(p);
         }
 
         private static Task OnComplete()

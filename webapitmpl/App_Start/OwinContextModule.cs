@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 
@@ -17,6 +12,9 @@ namespace webapitmpl.App_Start
     ///   <item><see cref="IAuthenticationManager"/></item>
     /// </list>
     /// </summary>
+    /// <remarks>
+    /// This module is used with <see cref="OwinContextDependencyMiddleware"/>.
+    /// </remarks>
     internal class OwinContextModule : Module
     {
         protected override void Load(ContainerBuilder builder)

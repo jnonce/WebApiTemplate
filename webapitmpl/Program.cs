@@ -22,23 +22,15 @@ namespace webapitmpl
             StartOptions options = new StartOptions();
             cfg.Configure(options);
 
-            using (WebApp.Start < webapitmpl.App_Start.Startup>(options))
+            using (WebApp.Start<webapitmpl.App_Start.Startup>(options))
             {
-                Log("Server listening for connections");
-                await OnComplete();
-
-                Log("Shutdown registered");
+                await GetConsoleCancel();
             }
 
             await Task.Delay(1500);
         }
 
-        private static void Log(string p)
-        {
-            Console.WriteLine(p);
-        }
-
-        private static Task OnComplete()
+        private static Task GetConsoleCancel()
         {
             var complete = new TaskCompletionSource<object>();
             Console.CancelKeyPress += new ConsoleCancelEventHandler(

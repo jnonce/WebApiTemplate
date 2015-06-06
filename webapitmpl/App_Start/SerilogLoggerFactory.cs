@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Owin.Logging;
 
 namespace webapitmpl.App_Start
 {
+    /// <summary>
+    /// Bridges OWIN logging into Serilog.
+    /// </summary>
     public class SerilogLoggerFactory : ILoggerFactory
     {
         private Serilog.ILogger logger;
@@ -24,12 +23,10 @@ namespace webapitmpl.App_Start
         private class Logger : ILogger
         {
             private Serilog.ILogger logger;
-            private string name;
 
             public Logger(Serilog.ILogger logger, string name)
             {
-                this.logger = logger;
-                this.name = name;
+                this.logger = logger.ForContext("OwinSource", name);
             }
 
             public bool WriteCore(

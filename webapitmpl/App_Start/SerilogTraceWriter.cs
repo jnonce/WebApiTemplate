@@ -10,7 +10,10 @@ using Serilog.Events;
 
 namespace webapitmpl.App_Start
 {
-    class SerilogTraceWriter : ITraceWriter
+    /// <summary>
+    /// WebApi trace writer which bridges <see cref="TraceRecord"/> objects into Serilog
+    /// </summary>
+    internal class SerilogTraceWriter : ITraceWriter
     {
         private ILogger logger;
 

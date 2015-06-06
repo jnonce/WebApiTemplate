@@ -14,17 +14,19 @@ namespace webapitmpl.App_Start
     {
         public void Configuration(IAppBuilder app)
         {
+            // Load configuration
             IServiceConfiguration svcConfig = ServiceConfiguration.GetCurrent();
 
+            // Begin registering a container
             ContainerBuilder builder = new ContainerBuilder();
-            HttpConfiguration config = new HttpConfiguration();
 
+            // Register the configuration into the container
             builder.RegisterInstance(svcConfig).ExternallyOwned();
-            builder.RegisterApiControllers(System.Reflection.Assembly.GetExecutingAssembly());
-            builder.RegisterWebApiFilterProvider(config);
-            builder.RegisterHttpRequestMessage(config);
+
+            // Register some Owin services in the container
             builder.RegisterModule<OwinContextModule>();
 
+            // Register service types
             builder.RegisterType<webapitmpl.Providers.DemoProvider>()
                 .InstancePerRequest();
 
@@ -32,8 +34,8 @@ namespace webapitmpl.App_Start
             LoggingConfiguration(app, svcConfig, builder);
 
             // WebApi config
-            svcConfig.Configure(config);
-            ConfigureWebApi(config);
+            HttpConfiguration config = new HttpConfiguration();
+            ConfigureWebApi(config, svcConfig, builder);
 
             // Build the container
             IContainer container = builder.Build();

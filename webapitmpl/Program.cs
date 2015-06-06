@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin.Hosting;
+using webapitmpl.Configuration;
 
 namespace webapitmpl
 {
@@ -16,10 +17,12 @@ namespace webapitmpl
 
         private static async Task MainAsync()
         {
-            StartOptions options = new StartOptions();
-            options.Urls.Add("http://localhost:8999");
+            var cfg = ServiceConfiguration.GetCurrent();
 
-            using (WebApp.Start<webapitmpl.App_Start.Startup>(options))
+            StartOptions options = new StartOptions();
+            cfg.Configure(options);
+
+            using (WebApp.Start < webapitmpl.App_Start.Startup>(options))
             {
                 Log("Server listening for connections");
                 await OnComplete();

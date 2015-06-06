@@ -19,9 +19,6 @@ namespace webapitmpl.App_Start
             ContainerBuilder builder = new ContainerBuilder();
             HttpConfiguration config = new HttpConfiguration();
 
-            // Setup logging basics
-            LoggingConfiguration(app, svcConfig, builder);
-
             builder.RegisterInstance(svcConfig).ExternallyOwned();
             builder.RegisterApiControllers(System.Reflection.Assembly.GetExecutingAssembly());
             builder.RegisterWebApiFilterProvider(config);
@@ -31,7 +28,10 @@ namespace webapitmpl.App_Start
             builder.RegisterType<webapitmpl.Providers.DemoProvider>()
                 .InstancePerRequest();
 
-            // Routing
+            // Logging config
+            LoggingConfiguration(app, svcConfig, builder);
+
+            // WebApi config
             svcConfig.Configure(config);
             ConfigureWebApi(config);
 
@@ -47,17 +47,6 @@ namespace webapitmpl.App_Start
             // Pull the OWIN dependency scope into WebApi's request state
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
             app.UseAutofacWebApi(config);
-
-            //
-            app.Map("/foo",
-                bb =>
-                {
-                    bb.Run(ctx =>
-                        {
-                            ctx.Response.StatusCode = 200;
-                            return System.Threading.Tasks.Task.FromResult(0);
-                        });
-                });
 
             // Activate WebAPI
             app.UseWebApi(config);

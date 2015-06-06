@@ -37,6 +37,9 @@ namespace webapitmpl.App_Start
 
             // Register
             app.SetLoggerFactory(new SerilogLoggerFactory(logger));
+
+            // Initial log
+            logger.ForContext<Startup>().Information("Server Started");
         }
     }
 }

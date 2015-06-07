@@ -97,10 +97,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AutofacRegistrationExtensions.cs" />
     <Compile Include="App_Start\SerilogLoggerFactory.cs" />
     <Compile Include="App_Start\SerilogTraceWriter.cs" />
     <Compile Include="App_Start\OwinContextDependencyMiddleware.cs" />
-    <Compile Include="App_Start\OwinContextModule.cs" />
     <Compile Include="App_Start\Startup.Logging.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Configuration\Configuration.cs" />

@@ -1,11 +1,5 @@
-﻿using System.Net.Http;
-using System.Web.Http;
-using Autofac;
-using Autofac.Integration.WebApi;
+﻿using Autofac;
 using Owin;
-using Serilog;
-using Serilog.Formatting.Json;
-using Serilog.Sinks.IOFile;
 using webapitmpl.Configuration;
 
 namespace webapitmpl.App_Start
@@ -23,19 +17,9 @@ namespace webapitmpl.App_Start
             // Register the configuration into the container
             builder.RegisterInstance(svcConfig).ExternallyOwned();
 
-            // Register some Owin services in the container
-            builder.RegisterModule<OwinContextModule>();
-
             // Register service types
             builder.RegisterType<webapitmpl.Providers.DemoProvider>()
                 .InstancePerRequest();
-
-            // Logging config
-            LoggingConfiguration(app, svcConfig, builder);
-
-            // WebApi config
-            HttpConfiguration config = new HttpConfiguration();
-            ConfigureWebApi(config, svcConfig, builder);
 
             // Build the container
             IContainer container = builder.Build();
@@ -43,15 +27,14 @@ namespace webapitmpl.App_Start
             // Setup a dependency scope per request, at the OWIN layer
             app.UseAutofacMiddleware(container);
 
-            // Make sure the IOwinContext is registered
+            // Make sure the IOwinContext is registered in each request
             app.Use<OwinContextDependencyMiddleware>();
 
-            // Pull the OWIN dependency scope into WebApi's request state
-            config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
-            app.UseAutofacWebApi(config);
+            // Logging config
+            ConfigureLogging(app, svcConfig, container);
 
-            // Activate WebAPI
-            app.UseWebApi(config);
+            // WebApi config
+            ConfigureWebApi(app, svcConfig, container);
         }
     }
 }

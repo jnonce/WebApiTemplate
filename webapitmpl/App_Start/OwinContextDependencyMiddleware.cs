@@ -22,12 +22,31 @@ namespace webapitmpl.App_Start
             var contextScope = context.GetAutofacLifetimeScope();
 
             // Add the context to that scope
-            var nextBuild = new ContainerBuilder();
-            nextBuild.Register(c => context).InstancePerRequest().ExternallyOwned();
-            nextBuild.Update(contextScope.ComponentRegistry);
+            contextScope.UpdateRegistrations(
+                nextBuild => RegisterServices(context, nextBuild)
+                );
 
             // Continue processing
             return this.Next.Invoke(context);
+        }
+
+        private static void RegisterServices(IOwinContext context, ContainerBuilder nextBuild)
+        {
+            nextBuild.Register(c => context)
+                .InstancePerRequest()
+                .ExternallyOwned();
+
+            nextBuild.Register(c => context.Request)
+                .InstancePerRequest()
+                .ExternallyOwned();
+
+            nextBuild.Register(c => context.Response)
+                .InstancePerRequest()
+                .ExternallyOwned();
+
+            nextBuild.Register(c => context.Authentication)
+                .InstancePerRequest()
+                .ExternallyOwned();
         }
     }
 }

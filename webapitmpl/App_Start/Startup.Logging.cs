@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Logging;
 using Owin;
@@ -9,10 +10,10 @@ namespace webapitmpl.App_Start
 {
     public partial class Startup
     {
-        public void LoggingConfiguration(
+        public void ConfigureLogging(
             IAppBuilder app,
             IServiceConfiguration svcConfig,
-            ContainerBuilder builder)
+            IContainer container)
         {
             // Setup logging basics
             var logger = new LoggerConfiguration()
@@ -20,22 +21,37 @@ namespace webapitmpl.App_Start
                     m => new
                     {
                         Uri = m.RequestUri.AbsoluteUri,
-                        m.Method
+                        m.Method.Method
+                    })
+                .Destructure.ByTransforming<TraceRecord>(
+                    tr => new
+                    {
+                        tr.Category,
+                        tr.Kind,
+                        tr.Operator,
+                        tr.Operation,
+                        tr.Message,
+                        tr.Status
                     })
                 .WriteTo.Logger(ll => svcConfig.Configure(ll))
                 .CreateLogger();
             
             Log.Logger = logger;
 
-            // Make the logger available
-            builder.RegisterInstance(logger)
-                .ExternallyOwned();
+            // Update the container
+            container.UpdateRegistrations(
+                builder =>
+                {
+                    // Make the logger available
+                    builder.RegisterInstance(logger)
+                        .ExternallyOwned();
 
-            // Register WebApi logging
-            builder.RegisterType<SerilogTraceWriter>()
-                .As<System.Web.Http.Tracing.ITraceWriter>();
+                    // Register WebApi logging
+                    builder.RegisterType<SerilogTraceWriter>()
+                        .As<System.Web.Http.Tracing.ITraceWriter>();
+                });
 
-            // Register
+            // Register with Owin
             app.SetLoggerFactory(new SerilogLoggerFactory(logger));
 
             // Initial log

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Owin.Hosting;
 using Serilog;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.IOFile;
+using Serilog.Sinks.RollingFile;
 
 namespace webapitmpl.Configuration
 {
@@ -36,20 +38,22 @@ namespace webapitmpl.Configuration
 
         public Serilog.LoggerConfiguration Configure(Serilog.LoggerConfiguration logging)
         {
-            string fname = @"c:\Users\Justin\Documents\Visual Studio 2013\Projects\webapitmpl\webapitmpl\App_Start\stuff";
+            string folder = Path.GetDirectoryName(
+                typeof(ServiceConfiguration).Assembly.Location
+                );
+
+            string fname = Path.Combine(folder, "runtimelog");
+
             return logging
                 .WriteTo.Logger(
                     nested => nested.WriteTo.LiterateConsole(),
                     Serilog.Events.LogEventLevel.Warning
                     )
                 .WriteTo.Logger(
-                    nested => nested.WriteTo.Sink(new FileSink(fname + ".log", new JsonFormatter(), null)),
+                    nested => nested.WriteTo.Sink(new RollingFileSink(fname + "-{Date}.log", new JsonFormatter(), fileSizeLimitBytes: 1 << 20, retainedFileCountLimit: 31)),
                     Serilog.Events.LogEventLevel.Information
                     )
-                .WriteTo.Logger(
-                    nested => nested.WriteTo.Sink(new FileSink(fname + ".err", new JsonFormatter(), null)),
-                    Serilog.Events.LogEventLevel.Warning
-                    );
+                    ;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
+using Serilog;
 using webapitmpl.Providers;
 
 namespace webapitmpl.Controllers
@@ -11,16 +9,19 @@ namespace webapitmpl.Controllers
     public class DemoController : ApiController
     {
         private DemoProvider provider;
+        private ILogger logger;
 
-        public DemoController(DemoProvider provider)
+        public DemoController(DemoProvider provider, ILogger logger)
         {
             this.provider = provider;
+            this.logger = logger;
         }
 
         [HttpGet]
         [Route("item")]
-        public string Foo()
+        public string Foo(int itemId)
         {
+            logger.Information("Demo action on {itemId}", itemId);
             return provider.Get();
         }
 

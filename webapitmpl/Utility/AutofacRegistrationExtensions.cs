@@ -1,7 +1,7 @@
 ﻿using System;
 using Autofac;
 
-namespace webapitmpl.App_Start
+namespace webapitmpl.Utility
 {
     /// <summary>
     /// Utilities to improve container update readability

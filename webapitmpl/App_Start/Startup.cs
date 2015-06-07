@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Owin;
 using webapitmpl.Configuration;
+using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {

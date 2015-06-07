@@ -1,18 +1,18 @@
 ﻿using System;
 using Microsoft.Owin.Logging;
 
-namespace webapitmpl.App_Start
+namespace webapitmpl.Utility
 {
     /// <summary>
     /// Bridges OWIN logging into Serilog.
     /// </summary>
-    public class SerilogLoggerFactory : ILoggerFactory
+    public class SerilogOwinLoggerFactory : ILoggerFactory
     {
         private Serilog.ILogger logger;
 
-        public SerilogLoggerFactory(Serilog.ILogger logger)
+        public SerilogOwinLoggerFactory(Serilog.ILogger logger)
         {
-            this.logger = logger;
+            this.logger = logger.ForContext<SerilogOwinLoggerFactory>();
         }
 
         public ILogger Create(string name)

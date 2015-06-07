@@ -3,12 +3,12 @@ using Autofac;
 using Autofac.Integration.Owin;
 using Microsoft.Owin;
 
-namespace webapitmpl.App_Start
+namespace webapitmpl.Utility
 {
     /// <summary>
     /// Middleware which inserts the <see cref="IOwinContext"/> into the container
     /// </summary>
-    class OwinContextDependencyMiddleware : OwinMiddleware
+    internal class OwinContextDependencyMiddleware : OwinMiddleware
     {
         public OwinContextDependencyMiddleware(OwinMiddleware next)
             : base(next)

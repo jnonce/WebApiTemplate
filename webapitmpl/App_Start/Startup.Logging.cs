@@ -5,6 +5,7 @@ using Microsoft.Owin.Logging;
 using Owin;
 using Serilog;
 using webapitmpl.Configuration;
+using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
@@ -16,43 +17,53 @@ namespace webapitmpl.App_Start
             IContainer container)
         {
             // Setup logging basics
-            var logger = new LoggerConfiguration()
-                .Destructure.ByTransforming<HttpRequestMessage>(
-                    m => new
-                    {
-                        Uri = m.RequestUri.AbsoluteUri,
-                        m.Method.Method
-                    })
-                .Destructure.ByTransforming<TraceRecord>(
-                    tr => new
-                    {
-                        tr.Category,
-                        tr.Kind,
-                        tr.Operator,
-                        tr.Operation,
-                        tr.Message,
-                        tr.Status
-                    })
-                .WriteTo.Logger(ll => svcConfig.Configure(ll))
-                .CreateLogger();
-            
+            var loggingCfg = new LoggerConfiguration();
+
+            // Ensure only basics of hte HttpRequestMessage are ever logged
+            loggingCfg = loggingCfg.Destructure.ByTransforming<HttpRequestMessage>(
+                m => new
+                {
+                    Uri = m.RequestUri.AbsoluteUri,
+                    m.Method.Method
+                });
+
+            // Ensure that a TraceRecord (WebApi) stores only the data we need
+            loggingCfg = loggingCfg.Destructure.ByTransforming<TraceRecord>(
+                tr => new
+                {
+                    tr.Category,
+                    tr.Kind,
+                    tr.Operator,
+                    tr.Operation,
+                    tr.Message,
+                    tr.Status
+                });
+
+            // Pass logging config to configuration to setup sinks appropriate for our environment
+            loggingCfg = loggingCfg.WriteTo.Logger(ll => svcConfig.Configure(ll));
+                
+            // Create the logger
+            Serilog.ILogger logger = loggingCfg.CreateLogger();            
             Log.Logger = logger;
 
             // Update the container
             container.UpdateRegistrations(
                 builder =>
                 {
-                    // Make the logger available
+                    // Ensure that ILogger registrations are handled
+                    builder.RegisterModule<AutofacSerilogBridgeModule>();
+
+                    // Make the true logger available
                     builder.RegisterInstance(logger)
                         .ExternallyOwned();
 
                     // Register WebApi logging
-                    builder.RegisterType<SerilogTraceWriter>()
+                    builder.RegisterType<SerilogWebApiTraceWriter>()
                         .As<System.Web.Http.Tracing.ITraceWriter>();
                 });
 
-            // Register with Owin
-            app.SetLoggerFactory(new SerilogLoggerFactory(logger));
+            // Register Owin logging
+            app.SetLoggerFactory(new SerilogOwinLoggerFactory(logger));
 
             // Initial log
             logger.ForContext<Startup>().Information("Server Started");

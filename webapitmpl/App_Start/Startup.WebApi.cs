@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using Owin;
 using webapitmpl.Configuration;
+using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
@@ -16,17 +17,8 @@ namespace webapitmpl.App_Start
             var config = new HttpConfiguration();
 
             container.UpdateRegistrations(
-                builder =>
-                {
-                    // Allow Autofac to setup filters
-                    builder.RegisterWebApiFilterProvider(config);
-
-                    // Autofac will make HttpRequestMessage available
-                    builder.RegisterHttpRequestMessage(config);
-
-                    // Autofac will create controllers
-                    builder.RegisterApiControllers(System.Reflection.Assembly.GetExecutingAssembly());
-                });
+                builder => ConfigureContainerForWebApi(config, builder)
+                );
 
             // Allow config to modify WebApi
             svcConfig.Configure(config);
@@ -38,8 +30,20 @@ namespace webapitmpl.App_Start
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
             app.UseAutofacWebApi(config);
 
-            // Activate WebAPI
+            // Place WebApi onto the Owin pipeline
             app.UseWebApi(config);
+        }
+
+        private static void ConfigureContainerForWebApi(HttpConfiguration config, ContainerBuilder builder)
+        {
+            // Allow Autofac to setup filters
+            builder.RegisterWebApiFilterProvider(config);
+
+            // Autofac will make HttpRequestMessage available
+            builder.RegisterHttpRequestMessage(config);
+
+            // Autofac will create controllers
+            builder.RegisterApiControllers(System.Reflection.Assembly.GetExecutingAssembly());
         }
     }
 }

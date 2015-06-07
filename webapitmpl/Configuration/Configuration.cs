@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Microsoft.Owin.Hosting;
 using Serilog;
+using Serilog.Core;
 using Serilog.Formatting.Json;
-using Serilog.Sinks.IOFile;
 using Serilog.Sinks.RollingFile;
+using webapitmpl.Utility;
+using LogEventLevel = Serilog.Events.LogEventLevel;
 
 namespace webapitmpl.Configuration
 {
@@ -38,22 +37,38 @@ namespace webapitmpl.Configuration
 
         public Serilog.LoggerConfiguration Configure(Serilog.LoggerConfiguration logging)
         {
-            string folder = Path.GetDirectoryName(
-                typeof(ServiceConfiguration).Assembly.Location
+
+            // Allow warning and error events to show in the console
+            logging = logging.WriteTo.Logger(
+                nested => nested.WriteTo.LiterateConsole(),
+                LogEventLevel.Warning
                 );
 
-            string fname = Path.Combine(folder, "runtimelog");
+            // Log Informationals to a rolling file
+            // (NOTE: We exclude some noise from WebApi informational messages)
+            logging = logging.WriteTo.Logger(
+                nested => nested
+                    .MinimumLevel.Information()
+                    .Filter.With(LevelFromTypeLogEventFilter.For<SerilogWebApiTraceWriter>(LogEventLevel.Warning))
+                    .WriteTo.Sink(GetFileSink())
+                );
 
-            return logging
-                .WriteTo.Logger(
-                    nested => nested.WriteTo.LiterateConsole(),
-                    Serilog.Events.LogEventLevel.Warning
-                    )
-                .WriteTo.Logger(
-                    nested => nested.WriteTo.Sink(new RollingFileSink(fname + "-{Date}.log", new JsonFormatter(), fileSizeLimitBytes: 1 << 20, retainedFileCountLimit: 31)),
-                    Serilog.Events.LogEventLevel.Information
-                    )
-                    ;
+            return logging;
+        }
+
+        private static RollingFileSink GetFileSink()
+        {
+            var host = typeof(ServiceConfiguration).Assembly;
+
+            string folder = Path.GetDirectoryName(host.Location);
+            string fname = Path.Combine(folder, host.GetName().Name);
+
+            var fileSink = new RollingFileSink(
+                fname + ".{Date}.log",
+                new JsonFormatter(),
+                fileSizeLimitBytes: 1 << 24 /* 16 MB */,
+                retainedFileCountLimit: 10);
+            return fileSink;
         }
     }
 }

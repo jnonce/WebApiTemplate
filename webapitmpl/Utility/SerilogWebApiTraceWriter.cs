@@ -8,36 +8,18 @@ using System.Web.Http.Tracing;
 using Serilog;
 using Serilog.Events;
 
-namespace webapitmpl.App_Start
+namespace webapitmpl.Utility
 {
     /// <summary>
     /// WebApi trace writer which bridges <see cref="TraceRecord"/> objects into Serilog
     /// </summary>
-    internal class SerilogTraceWriter : ITraceWriter
+    internal class SerilogWebApiTraceWriter : ITraceWriter
     {
         private ILogger logger;
 
-        public SerilogTraceWriter(ILogger logger)
+        public SerilogWebApiTraceWriter(ILogger logger)
         {
-            this.logger = logger;
-        }
-
-        private ILogger GetContextLogger(HttpRequestMessage request)
-        {
-            if (request == null)
-            {
-                return logger;
-            }
-
-            object result;
-            if (request.Properties.TryGetValue("SerilogContext", out result))
-            {
-                return (ILogger)result;
-            }
-
-            ILogger clog = logger.ForContext<SerilogTraceWriter>();
-            request.Properties.Add("SerilogContext", clog);
-            return clog;
+            this.logger = logger.ForContext<SerilogWebApiTraceWriter>();
         }
 
         public void Trace(HttpRequestMessage request, string category, TraceLevel level, Action<TraceRecord> traceAction)
@@ -48,7 +30,7 @@ namespace webapitmpl.App_Start
                 var record = new TraceRecord(request, category, level);
                 traceAction(record);
 
-                GetContextLogger(request).Write(logLevel, record.Exception, "WebApi {@TraceRecord}", record);                
+                logger.Write(logLevel, record.Exception, "{@TraceRecord}", record);               
             }
         }
 

@@ -8,6 +8,9 @@ namespace webapitmpl.Utility
     /// <summary>
     /// Log filter which removes events from a given source which are beneath a given level
     /// </summary>
+    /// <remarks>
+    /// Used to reduce quiet chatty classes
+    /// </remarks>
     internal class LevelFromTypeLogEventFilter : ILogEventFilter
     {
         private ScalarValue sourceContextType;

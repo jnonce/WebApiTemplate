@@ -4,6 +4,7 @@ using Autofac;
 using Microsoft.Owin.Logging;
 using Owin;
 using Serilog;
+using SerilogWeb.Owin;
 using webapitmpl.Configuration;
 using webapitmpl.Utility;
 
@@ -18,6 +19,9 @@ namespace webapitmpl.App_Start
         {
             // Setup logging basics
             var loggingCfg = new LoggerConfiguration();
+
+            // Allow the logging context (CallContext) to enrich logs
+            loggingCfg = loggingCfg.Enrich.FromLogContext();
 
             // Ensure only basics of hte HttpRequestMessage are ever logged
             loggingCfg = loggingCfg.Destructure.ByTransforming<HttpRequestMessage>(
@@ -63,7 +67,8 @@ namespace webapitmpl.App_Start
                 });
 
             // Register Owin logging
-            app.SetLoggerFactory(new SerilogOwinLoggerFactory(logger));
+            app.UseSerilogRequestContext();
+            app.SetLoggerFactory(new SerilogWeb.Owin.LoggerFactory(logger));
 
             // Initial log
             logger.ForContext<Startup>().Information("Server Started");

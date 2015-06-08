@@ -70,6 +70,12 @@
     <Reference Include="Serilog.Sinks.Literate">
       <HintPath>..\packages\Serilog.Sinks.Literate.1.0.6\lib\net45\Serilog.Sinks.Literate.dll</HintPath>
     </Reference>
+    <Reference Include="SerilogMetrics">
+      <HintPath>..\packages\SerilogMetrics.1.0.23\lib\net45\SerilogMetrics.dll</HintPath>
+    </Reference>
+    <Reference Include="SerilogWeb.Owin">
+      <HintPath>..\packages\SerilogWeb.Owin.1.0.1\lib\net45\SerilogWeb.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -93,7 +99,6 @@
   <ItemGroup>
     <Compile Include="Utility\AutofacRegistrationExtensions.cs" />
     <Compile Include="Utility\AutofacSerilogBridgeModule.cs" />
-    <Compile Include="Utility\SerilogOwinLoggerFactory.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="Utility\OwinContextDependencyMiddleware.cs" />
     <Compile Include="App_Start\Startup.Logging.cs" />

@@ -9,6 +9,9 @@ namespace webapitmpl.Utility
     /// <summary>
     /// Bridge Serilog <see cref="ILogger"/> through Autofac.
     /// </summary>
+    /// <remarks>
+    /// This module ensures that the ILogger received by a component is set to the type's context
+    /// </remarks>
     public class AutofacSerilogBridgeModule : Module
     {
         protected override void Load(ContainerBuilder builder)

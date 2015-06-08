@@ -102,7 +102,6 @@
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="App_Start\Startup.Logging.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
-    <Compile Include="Configuration.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Program.cs" />

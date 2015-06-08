@@ -100,7 +100,6 @@
     <Compile Include="Utility\AutofacRegistrationExtensions.cs" />
     <Compile Include="Utility\AutofacSerilogBridgeModule.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
-    <Compile Include="Utility\OwinContextDependencyMiddleware.cs" />
     <Compile Include="App_Start\Startup.Logging.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
     <Compile Include="Configuration.cs" />

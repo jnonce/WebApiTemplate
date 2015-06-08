@@ -23,26 +23,6 @@ namespace webapitmpl.App_Start
             // Allow the logging context (CallContext) to enrich logs
             loggingCfg = loggingCfg.Enrich.FromLogContext();
 
-            // Ensure only basics of hte HttpRequestMessage are ever logged
-            loggingCfg = loggingCfg.Destructure.ByTransforming<HttpRequestMessage>(
-                m => new
-                {
-                    Uri = m.RequestUri.AbsoluteUri,
-                    m.Method.Method
-                });
-
-            // Ensure that a TraceRecord (WebApi) stores only the data we need
-            loggingCfg = loggingCfg.Destructure.ByTransforming<TraceRecord>(
-                tr => new
-                {
-                    tr.Category,
-                    tr.Kind,
-                    tr.Operator,
-                    tr.Operation,
-                    tr.Message,
-                    tr.Status
-                });
-
             // Pass logging config to configuration to setup sinks appropriate for our environment
             loggingCfg = loggingCfg.WriteTo.Logger(ll => svcConfig.Configure(ll));
                 

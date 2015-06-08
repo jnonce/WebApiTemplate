@@ -11,10 +11,10 @@ namespace webapitmpl.Providers
         private HttpRequestMessage message;
         private IAuthenticationManager authManager;
         
-        public DemoProvider(HttpRequestMessage message, IAuthenticationManager authManager)
+        public DemoProvider(HttpRequestMessage message, Microsoft.Owin.IOwinContext oc)
         {
             this.message = message;
-            this.authManager = authManager;
+            this.authManager = oc.Authentication;
         }
 
         public string Get()

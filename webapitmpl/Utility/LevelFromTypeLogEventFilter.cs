@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Serilog.Core;
 using Serilog.Events;
 using SerilogCoreConstants = Serilog.Core.Constants;
@@ -13,18 +14,23 @@ namespace webapitmpl.Utility
     /// </remarks>
     internal class LevelFromTypeLogEventFilter : ILogEventFilter
     {
-        private ScalarValue sourceContextType;
+        private ScalarValue[] sourceContextTypes;
         private LogEventLevel minimumLevel;
 
-        public LevelFromTypeLogEventFilter(Type sourceContextType, LogEventLevel minimumLevel)
+        public LevelFromTypeLogEventFilter(LogEventLevel minimumLevel, params Type[] sourceContextTypes)
+            : this(minimumLevel, sourceContextTypes.Select(sourceContextType => sourceContextType.FullName).ToArray())
         {
-            this.sourceContextType = new ScalarValue(sourceContextType.FullName);
+        }
+
+        public LevelFromTypeLogEventFilter(LogEventLevel minimumLevel, params string[] sourceContextTypes)
+        {
+            this.sourceContextTypes = sourceContextTypes.Select(t => new ScalarValue(t)).ToArray();
             this.minimumLevel = minimumLevel;
         }
 
         public static ILogEventFilter For<T>(LogEventLevel minimumLevel)
         {
-            return new LevelFromTypeLogEventFilter(typeof(T), minimumLevel);
+            return new LevelFromTypeLogEventFilter(minimumLevel, typeof(T));
         }
 
         // Return true to keep the event
@@ -39,7 +45,7 @@ namespace webapitmpl.Utility
             // If the event does not come from the expected source then we won't filter it out
             LogEventPropertyValue value;
             if (!logEvent.Properties.TryGetValue(SerilogCoreConstants.SourceContextPropertyName, out value)
-                || !sourceContextType.Equals(value))
+                || !sourceContextTypes.Any(sourceContextType=> sourceContextType.Equals(value)))
             {
                 return true;
             }

@@ -26,10 +26,8 @@ namespace webapitmpl.App_Start
             IContainer container = builder.Build();
 
             // Setup a dependency scope per request, at the OWIN layer
+            // Make IOwinContext available for use in a request
             app.UseAutofacMiddleware(container);
-
-            // Make sure the IOwinContext is registered in each request
-            app.Use<OwinContextDependencyMiddleware>();
 
             // Logging config
             ConfigureLogging(app, svcConfig, container);

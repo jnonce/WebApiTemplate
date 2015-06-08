@@ -19,7 +19,7 @@ namespace webapitmpl.Utility
 
         public SerilogWebApiTraceWriter(ILogger logger)
         {
-            this.logger = logger.ForContext<SerilogWebApiTraceWriter>();
+            this.logger = logger;
         }
 
         public void Trace(HttpRequestMessage request, string category, TraceLevel level, Action<TraceRecord> traceAction)
@@ -30,7 +30,18 @@ namespace webapitmpl.Utility
                 var record = new TraceRecord(request, category, level);
                 traceAction(record);
 
-                logger.Write(logLevel, record.Exception, "{@TraceRecord}", record);               
+                logger
+                    .ForContext(Serilog.Core.Constants.SourceContextPropertyName, category)
+                    //.Write(logLevel, record.Exception, "{@WebApi}", record);               
+                    .Write(
+                        logLevel,
+                        record.Exception,
+                        "{Operator} {Operation} ({Kind}) {Status} : {Message}",
+                        record.Operator,
+                        record.Operation,
+                        record.Kind,
+                        record.Status,
+                        record.Message);
             }
         }
 

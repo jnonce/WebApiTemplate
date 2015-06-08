@@ -49,11 +49,24 @@ namespace webapitmpl.Configuration
             logging = logging.WriteTo.Logger(
                 nested => nested
                     .MinimumLevel.Information()
-                    .Filter.With(LevelFromTypeLogEventFilter.For<SerilogWebApiTraceWriter>(LogEventLevel.Warning))
+                    .Filter.With(GetWebApiHushFilter())
                     .WriteTo.Sink(GetFileSink())
                 );
 
             return logging;
+        }
+
+        private static ILogEventFilter GetWebApiHushFilter()
+        {
+            // Ignore anything short of a warning from WebApi
+            // However, don't hush the "System.Web.Http.Request" source, as it gives us Request start/end timings
+            return new LevelFromTypeLogEventFilter(
+                LogEventLevel.Warning,
+                "System.Web.Http.MessageHandlers",
+                "System.Web.Http.Controllers",
+                "System.Web.Http.Action",
+                "System.Web.Http.ModelBinding",
+                "System.Net.Http.Formatting");
         }
 
         private static RollingFileSink GetFileSink()

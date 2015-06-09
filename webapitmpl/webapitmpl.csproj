@@ -114,6 +114,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="App_Start\Startup.WebApi.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

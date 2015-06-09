@@ -22,6 +22,9 @@ namespace webapitmpl.App_Start
             builder.RegisterType<webapitmpl.Providers.DemoProvider>()
                 .InstancePerRequest();
 
+            builder.RegisterType<Microsoft.Owin.Infrastructure.SystemClock>()
+                .As<Microsoft.Owin.Infrastructure.ISystemClock>();
+
             // Build the container
             IContainer container = builder.Build();
 
@@ -31,6 +34,9 @@ namespace webapitmpl.App_Start
 
             // Logging config
             ConfigureLogging(app, svcConfig, container);
+
+            // Auth
+            ConfigureAuth(app, svcConfig, container);
 
             // WebApi config
             ConfigureWebApi(app, svcConfig, container);

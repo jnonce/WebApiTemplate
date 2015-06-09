@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Tracing;
 using Serilog;
 using Serilog.Events;
@@ -30,18 +26,31 @@ namespace webapitmpl.Utility
                 var record = new TraceRecord(request, category, level);
                 traceAction(record);
 
-                logger
-                    .ForContext(Serilog.Core.Constants.SourceContextPropertyName, category)
-                    //.Write(logLevel, record.Exception, "{@WebApi}", record);               
-                    .Write(
-                        logLevel,
-                        record.Exception,
-                        "{Operator} {Operation} ({Kind}) {Status} : {Message}",
-                        record.Operator,
-                        record.Operation,
-                        record.Kind,
-                        record.Status,
-                        record.Message);
+                var requestLogger = logger
+                    .ForContext(Serilog.Core.Constants.SourceContextPropertyName, category);
+
+                if (!String.IsNullOrEmpty(record.Operator))
+                {
+                    requestLogger.Write(
+                            logLevel,
+                            record.Exception,
+                            "{Operator} {Operation} ({Kind}) {Status} : {Message}",
+                            record.Operator,
+                            record.Operation,
+                            record.Kind,
+                            record.Status,
+                            record.Message);
+                }
+                else
+                {
+                    requestLogger.Write(
+                            logLevel,
+                            record.Exception,
+                            "({Kind}) {Status} : {Message}",
+                            record.Kind,
+                            record.Status,
+                            record.Message);
+                }
             }
         }
 

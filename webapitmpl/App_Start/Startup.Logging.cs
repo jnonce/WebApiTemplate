@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Logging;
@@ -50,8 +52,26 @@ namespace webapitmpl.App_Start
             app.UseSerilogRequestContext();
             app.SetLoggerFactory(new SerilogWeb.Owin.LoggerFactory(logger));
 
+            // Log correlation id's on Http requests
+            app.AcceptCorrelationId("x-correlation-id", NormalizeCorrelationId);
+            app.EmitCorrelationId("x-correlation-id");
+            app.LogCorrelationId("RequestCorrelation");
+
             // Initial log
             logger.ForContext<Startup>().Information("Server Started");
+        }
+
+        private static string NormalizeCorrelationId(string givenId)
+        {
+            if (givenId == null
+                || givenId.Length > 100
+                || givenId.Length < 1
+                || !Regex.IsMatch(givenId, @"^[-_\.a-zA-Z0-9]*$", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
+            {
+                return Guid.NewGuid().ToString();
+            }
+
+            return givenId;
         }
     }
 }

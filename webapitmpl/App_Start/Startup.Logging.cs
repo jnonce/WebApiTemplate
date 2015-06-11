@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Logging;
 using Owin;

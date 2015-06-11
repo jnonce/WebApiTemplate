@@ -27,6 +27,7 @@ namespace webapitmpl.App_Start
 
             // Build the container
             IContainer container = builder.Build();
+            app.RegisterAppDisposing(container);
 
             // Setup a dependency scope per request, at the OWIN layer
             // Make IOwinContext available for use in a request

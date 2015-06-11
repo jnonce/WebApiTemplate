@@ -26,8 +26,6 @@ namespace webapitmpl
             {
                 await GetConsoleCancel();
             }
-
-            await Task.Delay(1500);
         }
 
         private static Task GetConsoleCancel()

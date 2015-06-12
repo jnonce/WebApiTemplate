@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Http;
 using Serilog;
+using webapitmpl.Models;
 using webapitmpl.Providers;
+using webapitmpl.Utility;
 
 namespace webapitmpl.Controllers
 {
@@ -23,6 +26,27 @@ namespace webapitmpl.Controllers
         {
             logger.Information("Demo action on {itemId}", itemId);
             return provider.Get();
+        }
+
+        [ValidateModel]
+        [HttpPost]
+        [Route("widget")]
+        public IHttpActionResult CreateWidget(
+            [FromBody]
+            WidgetCreate widget)
+        {
+            return Ok();
+        }
+
+        [ValidateModel]
+        [HttpPost]
+        [Route("widget/{name}")]
+        public IHttpActionResult UpdateWidget(
+            string name,
+            [FromBody]
+            WidgetUpdate widget)
+        {
+            return CreatedAtRoute("", new object { }, widget);
         }
 
         [HttpGet]

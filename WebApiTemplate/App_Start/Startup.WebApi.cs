@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
@@ -60,7 +61,14 @@ namespace webapitmpl.App_Start
             var asm = System.Reflection.Assembly.GetExecutingAssembly();
             builder.RegisterApiControllers(asm);
 
-            //
+            // Autofac will create validators
+            ConfigureValidation(asm, builder);
+        }
+
+        private static void ConfigureValidation(Assembly asm, ContainerBuilder builder)
+        {
+            // Find model types which have ValidatorAttribute
+            // Group the items by the ValidatorAttribute's type
             IEnumerable<IGrouping<Type, Type>> validatorTypes = asm.GetTypes()
                 .SelectMany(
                     type => type.GetCustomAttributes(typeof(ValidatorAttribute), inherit: false),
@@ -71,10 +79,14 @@ namespace webapitmpl.App_Start
                     })
                 .GroupBy(x => x.ValidatorType, x => x.ModelType);
 
+            // Register these validators
             Type validator = typeof(IValidator<>);
             foreach (IGrouping<Type, Type> validatorToModels in validatorTypes)
             {
+                // Define the validator as a component
                 var registration = builder.RegisterType(validatorToModels.Key);
+
+                // Register each model as an service provided
                 foreach (Type modelType in validatorToModels)
                 {
                     registration = registration.As(validator.MakeGenericType(modelType));

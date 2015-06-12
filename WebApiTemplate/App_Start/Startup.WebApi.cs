@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
+using FluentValidation;
+using FluentValidation.Attributes;
 using FluentValidation.WebApi;
 using Owin;
 using webapitmpl.Configuration;
 using webapitmpl.Utility;
-using FluentValidation;
-using System.Text.RegularExpressions;
 
 namespace webapitmpl.App_Start
 {
@@ -33,7 +33,8 @@ namespace webapitmpl.App_Start
             config.MapHttpAttributeRoutes();
 
             // Validation            
-            FluentValidationModelValidatorProvider.Configure(config,
+            FluentValidationModelValidatorProvider.Configure(
+                config,
                 provider =>
                 {
                     provider.ValidatorFactory = new AutofacFluentValidatorFactory(container);
@@ -60,34 +61,25 @@ namespace webapitmpl.App_Start
             builder.RegisterApiControllers(asm);
 
             //
-            builder.RegisterAssemblyTypes(asm)
-                .Where(t => typeof(FluentValidation.IValidator).IsAssignableFrom(t))
-                .As(type => GetTypes(type))
-                ;
-        }
-
-        private static IEnumerable<Type> GetTypes(Type validatorType)
-        {
-            var interfaces = new List<Type>();
-
-            // Match the convention on the validator name
-            Match match = Regex.Match(validatorType.Name, @"(\w+)Validator", RegexOptions.CultureInvariant);
-            if (match.Success)
-            {
-                // Locate the targetType
-                string targetType = String.Format("{0}.{1}", validatorType.Namespace, match.Groups[1].Value);
-                Type type = validatorType.Assembly.GetType(targetType, throwOnError: false);
-                if (type != null)
-                {
-                    Type desiredType = typeof(IValidator<>).MakeGenericType(type);
-                    if (desiredType.IsAssignableFrom(validatorType))
+            IEnumerable<IGrouping<Type, Type>> validatorTypes = asm.GetTypes()
+                .SelectMany(
+                    type => type.GetCustomAttributes(typeof(ValidatorAttribute), inherit: false),
+                    (type, item) => new
                     {
-                        interfaces.Add(desiredType);
-                    }
+                        ModelType = type,
+                        ValidatorType = ((ValidatorAttribute)item).ValidatorType
+                    })
+                .GroupBy(x => x.ValidatorType, x => x.ModelType);
+
+            Type validator = typeof(IValidator<>);
+            foreach (IGrouping<Type, Type> validatorToModels in validatorTypes)
+            {
+                var registration = builder.RegisterType(validatorToModels.Key);
+                foreach (Type modelType in validatorToModels)
+                {
+                    registration = registration.As(validator.MakeGenericType(modelType));
                 }
             }
-
-            return interfaces;
         }
     }
 }

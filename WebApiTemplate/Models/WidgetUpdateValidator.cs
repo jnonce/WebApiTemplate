@@ -15,6 +15,7 @@ namespace webapitmpl.Models
         }
     }
 
+    [Validator(typeof(WidgetCreateValidator))]
     public class WidgetCreate : Widget { }
 
 
@@ -29,6 +30,7 @@ namespace webapitmpl.Models
         }
     }
 
+    [Validator(typeof(WidgetUpdateValidator))]
     public class WidgetUpdate : Widget { }
 
     /// <summary>

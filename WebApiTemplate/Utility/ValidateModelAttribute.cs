@@ -1,10 +1,7 @@
 ﻿using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web.Http;
+using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
-using System.Web.Http.Results;
 
 namespace webapitmpl.Utility
 {
@@ -13,23 +10,18 @@ namespace webapitmpl.Utility
     /// </summary>
     public class ValidateModelAttribute : ActionFilterAttribute
     {
-        public override async Task OnActionExecutingAsync(HttpActionContext actionContext, CancellationToken cancellationToken)
+        public override void OnActionExecuting(HttpActionContext actionContext)
         {
             if (!actionContext.ModelState.IsValid)
             {
-                var content = new HttpError(
-                    actionContext.ModelState,
-                    actionContext.RequestContext.IncludeErrorDetail);
-                
-                var result = new NegotiatedContentResult<HttpError>(
+                actionContext.Response = actionContext.Request.CreateErrorResponse(
                     HttpStatusCode.BadRequest,
-                    content,
-                    (ApiController)actionContext.ControllerContext.Controller);
-                
-                actionContext.Response = await result.ExecuteAsync(cancellationToken);
+                    actionContext.ModelState);
             }
-            
-            await base.OnActionExecutingAsync(actionContext, cancellationToken);
+            else
+            {
+                base.OnActionExecuting(actionContext);
+            }
         }
     }
 }

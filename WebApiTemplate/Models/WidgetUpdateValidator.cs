@@ -3,18 +3,6 @@ using FluentValidation.Attributes;
 
 namespace webapitmpl.Models
 {
-    // Model types which link to the validator
-
-    [Validator(typeof(WidgetCreateValidator))]
-    public class WidgetCreate : Widget
-    {
-    }
-
-    [Validator(typeof(WidgetUpdateValidator))]
-    public class WidgetUpdate : Widget
-    {
-    }
-
     /// <summary>
     /// Validation rules common for all operations
     /// </summary>
@@ -27,6 +15,9 @@ namespace webapitmpl.Models
         }
     }
 
+    public class WidgetCreate : Widget { }
+
+
     /// <summary>
     /// Validation rules for create
     /// </summary>
@@ -37,6 +28,8 @@ namespace webapitmpl.Models
             RuleFor(x => x.Name).NotNull();
         }
     }
+
+    public class WidgetUpdate : Widget { }
 
     /// <summary>
     /// Validation rules for update

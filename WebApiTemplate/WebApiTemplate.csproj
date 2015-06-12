@@ -109,6 +109,7 @@
     <Compile Include="Utility\AppBuilderDisposeExtensions.cs" />
     <Compile Include="Utility\AutofacRegistrationExtensions.cs" />
     <Compile Include="Utility\AutofacSerilogBridgeModule.cs" />
+    <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />
     <Compile Include="Utility\CorrelationIdOwinContextExtensions.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />

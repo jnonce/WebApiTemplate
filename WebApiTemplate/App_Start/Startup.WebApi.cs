@@ -1,6 +1,7 @@
 ﻿using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
+using FluentValidation.WebApi;
 using Owin;
 using webapitmpl.Configuration;
 using webapitmpl.Utility;
@@ -25,6 +26,9 @@ namespace webapitmpl.App_Start
 
             // Routing
             config.MapHttpAttributeRoutes();
+
+            // Validation            
+            FluentValidationModelValidatorProvider.Configure(config);
 
             // Pull the OWIN dependency scope into WebApi's request state
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

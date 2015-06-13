@@ -104,9 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Widget.cs" />
-    <Compile Include="Models\WidgetUpdateValidator.cs" />
+    <Compile Include="Models\WidgetValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\AppBuilderDisposeExtensions.cs" />
+    <Compile Include="Utility\AutofacFluentValidationExtensions.cs" />
     <Compile Include="Utility\AutofacRegistrationExtensions.cs" />
     <Compile Include="Utility\AutofacSerilogBridgeModule.cs" />
     <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />

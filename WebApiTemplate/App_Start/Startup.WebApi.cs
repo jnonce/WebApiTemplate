@@ -33,13 +33,8 @@ namespace webapitmpl.App_Start
             // Routing
             config.MapHttpAttributeRoutes();
 
-            // Validation            
-            FluentValidationModelValidatorProvider.Configure(
-                config,
-                provider =>
-                {
-                    provider.ValidatorFactory = new AutofacFluentValidatorFactory(container);
-                });
+            // Validation
+            config.UseAutofacFluentValidation(container);
 
             // Pull the OWIN dependency scope into WebApi's request state
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);
@@ -62,36 +57,7 @@ namespace webapitmpl.App_Start
             builder.RegisterApiControllers(asm);
 
             // Autofac will create validators
-            ConfigureValidation(asm, builder);
-        }
-
-        private static void ConfigureValidation(Assembly asm, ContainerBuilder builder)
-        {
-            // Find model types which have ValidatorAttribute
-            // Group the items by the ValidatorAttribute's type
-            IEnumerable<IGrouping<Type, Type>> validatorTypes = asm.GetTypes()
-                .SelectMany(
-                    type => type.GetCustomAttributes(typeof(ValidatorAttribute), inherit: false),
-                    (type, item) => new
-                    {
-                        ModelType = type,
-                        ValidatorType = ((ValidatorAttribute)item).ValidatorType
-                    })
-                .GroupBy(x => x.ValidatorType, x => x.ModelType);
-
-            // Register these validators
-            Type validator = typeof(IValidator<>);
-            foreach (IGrouping<Type, Type> validatorToModels in validatorTypes)
-            {
-                // Define the validator as a component
-                var registration = builder.RegisterType(validatorToModels.Key);
-
-                // Register each model as an service provided
-                foreach (Type modelType in validatorToModels)
-                {
-                    registration = registration.As(validator.MakeGenericType(modelType));
-                }
-            }
+            builder.RegisterFluentValidators(asm);
         }
     }
 }

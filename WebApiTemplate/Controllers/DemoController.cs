@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Web.Http;
 using Serilog;
 using webapitmpl.Models;
@@ -28,25 +27,28 @@ namespace webapitmpl.Controllers
             return provider.Get();
         }
 
-        [ValidateModel]
         [HttpPost]
         [Route("widget")]
+        [ValidateModel]
         public IHttpActionResult CreateWidget(
             [FromBody]
             WidgetCreate widget)
         {
-            return Ok();
+            return CreatedAtRoute(
+                "UpdateWidget",
+                new { name = widget.Name }, 
+                widget);
         }
 
-        [ValidateModel]
         [HttpPost]
-        [Route("widget/{name}")]
+        [Route("widget/{name}", Name = "UpdateWidget")]
+        [ValidateModel]
         public IHttpActionResult UpdateWidget(
             string name,
             [FromBody]
             WidgetUpdate widget)
         {
-            return CreatedAtRoute("", new object { }, widget);
+            return Ok();
         }
 
         [HttpGet]

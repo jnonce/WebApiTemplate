@@ -56,7 +56,10 @@ namespace webapitmpl.App_Start
             app.LogCorrelationId("RequestCorrelation");
 
             // Initial log
-            logger.ForContext<Startup>().Information("Server Started");
+            var lifetimeLogger = logger.ForContext<Startup>();
+            lifetimeLogger.Information("Server Started");
+            app.RegisterAppDisposing(
+                () => lifetimeLogger.Information("Server Stopped"));
         }
 
         private static string NormalizeCorrelationId(string givenId)

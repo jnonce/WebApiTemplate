@@ -27,7 +27,7 @@ namespace webapitmpl.Utility
         {
             // Find model types which have ValidatorAttribute
             // Group the items by the ValidatorAttribute's type
-            IEnumerable<IGrouping<Type, Type>> validatorTypes = 
+            var validatorTypes =
                 assemblies
                 .SelectMany(asm => asm.GetTypes())
                 .SelectMany(
@@ -37,17 +37,24 @@ namespace webapitmpl.Utility
                         ModelType = type,
                         ValidatorType = ((ValidatorAttribute)item).ValidatorType
                     })
-                .GroupBy(x => x.ValidatorType, x => x.ModelType);
+                .GroupBy(
+                    x => x.ValidatorType, 
+                    x => x.ModelType,
+                    (validatorType, modelTypes) => new 
+                    { 
+                        ValidatorType = validatorType, 
+                        ModelTypes = modelTypes.ToArray() 
+                    });
 
             // Register these validators
             Type validator = typeof(IValidator<>);
-            foreach (IGrouping<Type, Type> validatorToModels in validatorTypes)
+            foreach (var validatorToModels in validatorTypes)
             {
                 // Define the validator as a component
-                var registration = builder.RegisterType(validatorToModels.Key);
+                var registration = builder.RegisterType(validatorToModels.ValidatorType);
 
                 // Register each model as an service provided
-                foreach (Type modelType in validatorToModels)
+                foreach (Type modelType in validatorToModels.ModelTypes)
                 {
                     registration = registration.As(validator.MakeGenericType(modelType));
                 }

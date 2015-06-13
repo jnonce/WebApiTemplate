@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Formatting;
 using System.Reflection;
 using System.Web.Http;
 using Autofac;
@@ -29,6 +30,10 @@ namespace webapitmpl.App_Start
 
             // Allow config to modify WebApi
             svcConfig.Configure(config);
+
+            // Enforce specific Json formatting
+            config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
             // Routing
             config.MapHttpAttributeRoutes();

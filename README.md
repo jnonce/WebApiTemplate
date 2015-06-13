@@ -10,5 +10,5 @@ Current features:
 * Logging via [Serilog](https://github.com/serilog/serilog)
   * Each incoming request
   * Errors or warnings seen by WebApi or Owin
+* Validation via [FluentValidation](https://github.com/JeremySkinner/FluentValidation)
 * Dependency Injection via [Autofac](https://github.com/autofac/Autofac)
-

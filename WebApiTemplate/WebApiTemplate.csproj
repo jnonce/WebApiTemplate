@@ -103,6 +103,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\DevServiceConfiguration.cs" />
+    <Compile Include="Configuration\IServiceConfiguration.cs" />
     <Compile Include="Models\Widget.cs" />
     <Compile Include="Models\WidgetValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,7 +118,7 @@
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="App_Start\Startup.Logging.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
-    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ServiceConfiguration.cs" />
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Providers\DemoProvider.cs" />

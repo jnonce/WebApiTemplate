@@ -20,10 +20,18 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [Route("item")]
+        [VersionedRoute("item", 1, 3)]
         public string Foo(int itemId)
         {
             logger.Information("Demo action on {itemId}", itemId);
+            return provider.Get();
+        }
+
+        [HttpGet]
+        [VersionedRoute("item", 4)]
+        public string Foo4(int itemId, string coolName)
+        {
+            logger.Information("Demo action on {itemId}, {coolName}", itemId, coolName);
             return provider.Get();
         }
 

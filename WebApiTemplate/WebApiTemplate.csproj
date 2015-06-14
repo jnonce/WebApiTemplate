@@ -124,6 +124,8 @@
     <Compile Include="Providers\DemoProvider.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Utility\ValidateModelAttribute.cs" />
+    <Compile Include="Utility\VersionConstraint.cs" />
+    <Compile Include="Utility\VersionedRouteAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -10,6 +10,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F4B5059C-A4A0-47D7-BF85-C71EB197D1B4}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jnonce.WebApi.VersionedRouting", "jnonce.WebApi.VersionedRouting\jnonce.WebApi.VersionedRouting.csproj", "{57B28AE6-B063-4722-8A9F-A526A9B0054E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +29,10 @@ Global
 		{92AC8470-6526-45AE-AECA-DF96E8713193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92AC8470-6526-45AE-AECA-DF96E8713193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92AC8470-6526-45AE-AECA-DF96E8713193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Web.Http;
+using jnonce.WebApi.VersionedRouting;
 using Serilog;
 using webapitmpl.Models;
 using webapitmpl.Providers;
 using webapitmpl.Utility;
-using webapitmpl.Utility.ApiVersion;
 
 namespace webapitmpl.Controllers
 {

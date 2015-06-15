@@ -1,18 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Routing;
 
-namespace webapitmpl.Utility.ApiVersion
+namespace jnonce.WebApi.VersionedRouting
 {
     /// <summary>
     /// A versioned route endpoint
     /// </summary>
-    internal sealed class VersionedRouteAttribute : RouteFactoryAttribute
+    public sealed class VersionedRouteAttribute : RouteFactoryAttribute
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionedRouteAttribute"/>
         /// </summary>
         /// <param name="template">The route template.</param>
-        /// <param name="versions">The versions this api supports.</param>
+        /// <param name="version">The version this api supports.</param>
         public VersionedRouteAttribute(string template, int version)
             : base(template)
         {
@@ -21,11 +21,12 @@ namespace webapitmpl.Utility.ApiVersion
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VersionedRouteAttribute"/>
+        /// Initializes a new instance of the <see cref="VersionedRouteAttribute" />
         /// </summary>
         /// <param name="template">The route template.</param>
-        /// <param name="versions">The versions this api supports.</param>
-        public VersionedRouteAttribute(string template, int minVersion, int maxVersion)
+        /// <param name="minVersion">The minimum version.</param>
+        /// <param name="maxVersion">The maximum version.</param>
+         public VersionedRouteAttribute(string template, int minVersion, int maxVersion)
             : base(template)
         {
             this.MinVersion = minVersion;

@@ -1,11 +1,11 @@
 ﻿using System.Net.Http;
 
-namespace webapitmpl.Utility.ApiVersion
+namespace jnonce.WebApi.VersionedRouting
 {
     /// <summary>
     /// Provide Api version from a request message
     /// </summary>
-    internal interface IApiVersionProvider
+    public interface IApiVersionProvider
     {
         /// <summary>
         /// Tries to get the Api version from the message.

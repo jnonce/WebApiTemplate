@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Http.Routing;
 
-namespace webapitmpl.Utility.ApiVersion
+namespace jnonce.WebApi.VersionedRouting
 {
     /// <summary>
     /// A constraint for an Api which matches the Api version
     /// </summary>
-    internal class VersionConstraint : IHttpRouteConstraint
+    public class VersionConstraint : IHttpRouteConstraint
     {
         private Func<int?, bool> isSupported;
 
@@ -21,6 +21,18 @@ namespace webapitmpl.Utility.ApiVersion
             this.isSupported = isSupported;
         }
 
+        /// <summary>
+        /// Determines whether this instance equals a specified route.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="route">The route to compare.</param>
+        /// <param name="parameterName">The name of the parameter.</param>
+        /// <param name="values">A list of parameter values.</param>
+        /// <param name="routeDirection">The route direction.</param>
+        /// <returns>
+        /// True if this instance equals a specified route; otherwise, false.
+        /// </returns>
+        /// <exception cref="System.InvalidOperationException"></exception>
         public bool Match(
             HttpRequestMessage request, 
             IHttpRoute route, 

@@ -4,12 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 
-namespace webapitmpl.Utility.ApiVersion
+namespace jnonce.WebApi.VersionedRouting
 {
     /// <summary>
     /// Gets the Api version from an Http request header
     /// </summary>
-    internal class HttpHeaderApiVersionProvider : IApiVersionProvider
+    public class HttpHeaderApiVersionProvider : IApiVersionProvider
     {
         private string headerName;
 
@@ -22,6 +22,14 @@ namespace webapitmpl.Utility.ApiVersion
             this.headerName = headerName;
         }
 
+        /// <summary>
+        /// Tries to get the Api version from the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="version">The version retrieved, if any.</param>
+        /// <returns>
+        /// true on success, false if no version was found.
+        /// </returns>
         public bool TryGetApiVersion(HttpRequestMessage message, out int version)
         {
             IEnumerable<string> values;

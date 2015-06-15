@@ -7,6 +7,7 @@ Current features:
 
 * Http hosting via Microsoft Owin and HttpListener
 * Routing, model serialization, and binding by WebApi
+* Versioned Api routing
 * Logging via [Serilog](https://github.com/serilog/serilog)
   * Each incoming request
   * Errors or warnings seen by WebApi or Owin

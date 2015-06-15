@@ -5,7 +5,7 @@ using Semver;
 namespace jnonce.WebApi.VersionedRouting
 {
     /// <summary>
-    /// A versioned route endpoint
+    /// Place on an action to expose it directly via a route, but limit access to particular Api versions
     /// </summary>
     public sealed class VersionedRouteAttribute : RouteFactoryAttribute
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Http.Routing;
+using Semver;
 
 namespace jnonce.WebApi.VersionedRouting
 {
@@ -10,13 +11,13 @@ namespace jnonce.WebApi.VersionedRouting
     /// </summary>
     public class VersionConstraint : IHttpRouteConstraint
     {
-        private Func<int?, bool> isSupported;
+        private Func<SemVersion, bool> isSupported;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VersionConstraint"/> class.
         /// </summary>
         /// <param name="isSupported">Predicate identifying whether the given Api version is matched by this constraint.</param>
-        public VersionConstraint(Func<int?, bool> isSupported)
+        public VersionConstraint(Func<SemVersion, bool> isSupported)
         {
             this.isSupported = isSupported;
         }
@@ -50,7 +51,7 @@ namespace jnonce.WebApi.VersionedRouting
                 }
 
 
-                int version;
+                SemVersion version;
                 if (provider.TryGetApiVersion(request, out version) && this.isSupported(version))
                 {
                     return true;

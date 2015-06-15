@@ -21,7 +21,7 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [VersionedRoute("item", 1, 3)]
+        [VersionedRoute("item", "1.0", "2.7")]
         public string Foo(int itemId)
         {
             logger.Information("Demo action on {itemId}", itemId);
@@ -29,7 +29,7 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [VersionedRoute("item", 4, Name = "getItemV4")]
+        [VersionedRoute("item", "4.0", Name = "getItemV4")]
         public string Foo4(int itemId, string coolName)
         {
             logger.Information("Demo action on {itemId}, {coolName}", itemId, coolName);

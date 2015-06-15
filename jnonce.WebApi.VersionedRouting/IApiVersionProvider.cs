@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using Semver;
 
 namespace jnonce.WebApi.VersionedRouting
 {
@@ -13,6 +14,6 @@ namespace jnonce.WebApi.VersionedRouting
         /// <param name="message">The message.</param>
         /// <param name="version">The version retrieved, if any.</param>
         /// <returns>true on success, false if no version was found.</returns>
-        bool TryGetApiVersion(HttpRequestMessage message, out int version);
+        bool TryGetApiVersion(HttpRequestMessage message, out SemVersion version);
     }
 }

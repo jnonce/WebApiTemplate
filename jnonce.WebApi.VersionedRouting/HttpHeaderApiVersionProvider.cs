@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using Semver;
 
 namespace jnonce.WebApi.VersionedRouting
 {
@@ -30,7 +31,7 @@ namespace jnonce.WebApi.VersionedRouting
         /// <returns>
         /// true on success, false if no version was found.
         /// </returns>
-        public bool TryGetApiVersion(HttpRequestMessage message, out int version)
+        public bool TryGetApiVersion(HttpRequestMessage message, out SemVersion version)
         {
             IEnumerable<string> values;
             if (message.Headers.TryGetValues(headerName, out values))
@@ -38,9 +39,8 @@ namespace jnonce.WebApi.VersionedRouting
                 var flattenedHeaders = values.Take(2).ToArray();
                 if (flattenedHeaders.Length == 1)
                 {
-                    int apiVersion;
-                    if (Int32.TryParse(flattenedHeaders[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out apiVersion)
-                        && (apiVersion & 0xffffff) == apiVersion)
+                    SemVersion apiVersion;
+                    if (SemVersion.TryParse(flattenedHeaders[0], out apiVersion))
                     {
                         version = apiVersion;
                         return true;
@@ -48,7 +48,7 @@ namespace jnonce.WebApi.VersionedRouting
                 }
             }
 
-            version = 0;
+            version = null;
             return false;
         }
     }

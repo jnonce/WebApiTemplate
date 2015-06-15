@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Routing;
+using Semver;
 
 namespace jnonce.WebApi.VersionedRouting
 {
@@ -16,8 +17,20 @@ namespace jnonce.WebApi.VersionedRouting
         public VersionedRouteAttribute(string template, int version)
             : base(template)
         {
-            this.MinVersion = version;
-            this.MaxVersion = version;
+            this.MinVersion = new SemVersion(version);
+            this.MaxVersion = new SemVersion(version);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionedRouteAttribute"/>
+        /// </summary>
+        /// <param name="template">The route template.</param>
+        /// <param name="version">The version this api supports.</param>
+        public VersionedRouteAttribute(string template, string version)
+            : base(template)
+        {
+            this.MinVersion = SemVersion.Parse(version);
+            this.MaxVersion = SemVersion.Parse(version);
         }
 
         /// <summary>
@@ -26,22 +39,35 @@ namespace jnonce.WebApi.VersionedRouting
         /// <param name="template">The route template.</param>
         /// <param name="minVersion">The minimum version.</param>
         /// <param name="maxVersion">The maximum version.</param>
-         public VersionedRouteAttribute(string template, int minVersion, int maxVersion)
+        public VersionedRouteAttribute(string template, int minVersion, int maxVersion)
             : base(template)
         {
-            this.MinVersion = minVersion;
-            this.MaxVersion = maxVersion;
+            this.MinVersion = new SemVersion(minVersion);
+            this.MaxVersion = new SemVersion(maxVersion);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionedRouteAttribute" />
+        /// </summary>
+        /// <param name="template">The route template.</param>
+        /// <param name="minVersion">The minimum version.</param>
+        /// <param name="maxVersion">The maximum version.</param>
+        public VersionedRouteAttribute(string template, string minVersion, string maxVersion)
+            : base(template)
+        {
+            this.MinVersion = SemVersion.Parse(minVersion);
+            this.MaxVersion = SemVersion.Parse(maxVersion);
         }
 
         /// <summary>
         /// Gets the minimum version for the Api.
         /// </summary>
-        public int MinVersion { get; private set; }
+         public SemVersion MinVersion { get; private set; }
 
         /// <summary>
         /// Gets the maximum version for the Api.
         /// </summary>
-        public int MaxVersion { get; private set; }
+         public SemVersion MaxVersion { get; private set; }
 
         /// <summary>
         /// Gets the route constraints, if any; otherwise null.
@@ -54,10 +80,9 @@ namespace jnonce.WebApi.VersionedRouting
                     givenVersion => (givenVersion >= MinVersion) && (givenVersion <= MaxVersion));
 
                 var constraints = new HttpRouteValueDictionary();
-                constraints.Add("version", c);
+                constraints.Add("api-version", c);
                 return constraints;
             }
         }
-
     }
 }

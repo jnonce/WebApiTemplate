@@ -29,10 +29,11 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [VersionedRoute("item", 4)]
+        [VersionedRoute("item", 4, Name = "getItemV4")]
         public string Foo4(int itemId, string coolName)
         {
             logger.Information("Demo action on {itemId}, {coolName}", itemId, coolName);
+            string test = this.Url.Link("getItemV4", new { itemId = 1, coolName = "e" });
             return provider.Get();
         }
 

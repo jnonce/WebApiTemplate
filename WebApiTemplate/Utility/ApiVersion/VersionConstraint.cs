@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Routing;
 
 namespace webapitmpl.Utility.ApiVersion
@@ -13,8 +10,6 @@ namespace webapitmpl.Utility.ApiVersion
     /// </summary>
     internal class VersionConstraint : IHttpRouteConstraint
     {
-        public const string VersionHeaderName = "api-version";
-        
         private Func<int?, bool> isSupported;
 
         /// <summary>
@@ -48,8 +43,15 @@ namespace webapitmpl.Utility.ApiVersion
                 {
                     return true;
                 }
+
+                return false;
             }
-            return false;
+            else
+            {
+                // Given that route parameters are given out of band, we can presume that
+                // any url generation will match the given parameter values.
+                return true;
+            }
         }
     }
 }

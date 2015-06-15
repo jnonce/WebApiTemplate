@@ -44,8 +44,7 @@ namespace jnonce.WebApi.VersionedRouting
         {
             if (routeDirection == HttpRouteDirection.UriResolution)
             {
-                var dependencyScope = request.GetDependencyScope();
-                var services = dependencyScope.GetServices(typeof(IApiVersionProvider));
+                var services = GetApiVersionProviders(request);
                 if (services == null)
                 {
                     return false;
@@ -65,6 +64,24 @@ namespace jnonce.WebApi.VersionedRouting
                 // any url generation will match the given parameter values.
                 return true;
             }
+        }
+
+        private static IEnumerable<IApiVersionProvider> GetApiVersionProviders(HttpRequestMessage request)
+        {
+            // TODO: Support registering providers in   request.GetConfiguration().Properties
+            // We'll need some static class(es) to support:
+            //
+            // HttpConfiguration config = ...;
+            // config.SetApiVersionProviders(new HttpHeaderApiVersionProvider(...), new AcceptHeaderApiVersionProvider(...));
+            // IEnumerable<IApiVersionProvider> providers = config.GetApiVersionProviders();
+            //
+            // HttpRequestMessage request = ...;
+            // IEnumerable<IApiVersionProvider> providers = request.GetApiVersionProviders(); // read from config AND IoC
+
+            var dependencyScope = request.GetDependencyScope();
+            var services = dependencyScope.GetServices(typeof(IApiVersionProvider));
+
+            return services.OfType<IApiVersionProvider>();
         }
 
         private bool TryGetApiVersion(IEnumerable<IApiVersionProvider> providers, HttpRequestMessage request, out SemVersion version)

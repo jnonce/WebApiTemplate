@@ -6,8 +6,17 @@ using Semver;
 namespace jnonce.WebApi.VersionedRouting
 {
     /// <summary>
-    /// Api version provider which uses a query string parameter
+    /// Api version provider which uses the Http Accept header.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If the parameter name is given as "vnd-api", then this header could be given as:
+    /// </para>
+    /// 
+    /// <example>
+    /// Accept: application/json; vnd-api=2.0
+    /// </example>
+    /// </remarks>
     public class AcceptHeaderApiVersionProvider : IApiVersionProvider
     {
         private string parameterName;
@@ -15,7 +24,7 @@ namespace jnonce.WebApi.VersionedRouting
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryStringApiVersionProvider"/> class.
         /// </summary>
-        /// <param name="parameterName">Name of the query string parameter.</param>
+        /// <param name="parameterName">Name of the Accept header parameter to read.</param>
         public AcceptHeaderApiVersionProvider(string parameterName)
         {
             this.parameterName = parameterName;

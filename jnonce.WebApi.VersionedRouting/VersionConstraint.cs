@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Http.Routing;
@@ -44,15 +45,14 @@ namespace jnonce.WebApi.VersionedRouting
             if (routeDirection == HttpRouteDirection.UriResolution)
             {
                 var dependencyScope = request.GetDependencyScope();
-                var provider = (IApiVersionProvider)dependencyScope.GetService(typeof(IApiVersionProvider));
-                if (provider == null)
+                var services = dependencyScope.GetServices(typeof(IApiVersionProvider));
+                if (services == null)
                 {
-                    throw new InvalidOperationException();
+                    return false;
                 }
 
-
                 SemVersion version;
-                if (provider.TryGetApiVersion(request, out version) && this.isSupported(version))
+                if (TryGetApiVersion(services.OfType<IApiVersionProvider>(), request, out version) && this.isSupported(version))
                 {
                     return true;
                 }
@@ -65,6 +65,20 @@ namespace jnonce.WebApi.VersionedRouting
                 // any url generation will match the given parameter values.
                 return true;
             }
+        }
+
+        private bool TryGetApiVersion(IEnumerable<IApiVersionProvider> providers, HttpRequestMessage request, out SemVersion version)
+        {
+            foreach (IApiVersionProvider provider in providers)
+            {
+                if (provider.TryGetApiVersion(request, out version))
+                {
+                    return true;
+                }
+            }
+
+            version = null;
+            return false;
         }
     }
 }

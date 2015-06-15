@@ -60,6 +60,8 @@ namespace webapitmpl.App_Start
             // Register the Api version provider
             builder.RegisterInstance<IApiVersionProvider>(
                 new HttpHeaderApiVersionProvider("api-version"));
+            builder.RegisterInstance<IApiVersionProvider>(
+                new AcceptHeaderApiVersionProvider("vnd-api"));
         }
     }
 }

@@ -6,23 +6,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Routing;
 
-namespace webapitmpl.Utility
+namespace webapitmpl.Utility.ApiVersion
 {
+    /// <summary>
+    /// A constraint for an Api which matches the Api version
+    /// </summary>
     internal class VersionConstraint : IHttpRouteConstraint
     {
         public const string VersionHeaderName = "api-version";
         
         private Func<int?, bool> isSupported;
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionConstraint"/> class.
+        /// </summary>
+        /// <param name="isSupported">Predicate identifying whether the given Api version is matched by this constraint.</param>
         public VersionConstraint(Func<int?, bool> isSupported)
         {
             this.isSupported = isSupported;
-        }
-
-        public ISet<int> Versions
-        {
-            get;
-            private set;
         }
 
         public bool Match(
@@ -34,33 +35,21 @@ namespace webapitmpl.Utility
         {
             if (routeDirection == HttpRouteDirection.UriResolution)
             {
-                int? version = GetVersionHeader(request);
-                if (this.isSupported(version))
+                var dependencyScope = request.GetDependencyScope();
+                var provider = (IApiVersionProvider)dependencyScope.GetService(typeof(IApiVersionProvider));
+                if (provider == null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+
+                int version;
+                if (provider.TryGetApiVersion(request, out version) && this.isSupported(version))
                 {
                     return true;
                 }
             }
             return false;
-        }
-
-        private int? GetVersionHeader(HttpRequestMessage request)
-        {
-            string versionAsString;
-            IEnumerable<string> headerValues;
-            if (request.Headers.TryGetValues(VersionHeaderName, out headerValues) && headerValues.Count() == 1)
-            {
-                versionAsString = headerValues.First();
-            }
-            else
-            {
-                return null;
-            }
-            int version;
-            if (versionAsString != null && Int32.TryParse(versionAsString, out version))
-            {
-                return version;
-            }
-            return null;
         }
     }
 }

@@ -115,6 +115,8 @@
     <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />
     <Compile Include="Utility\CorrelationIdOwinContextExtensions.cs" />
+    <Compile Include="Utility\ApiVersion\HttpHeaderApiVersionProvider.cs" />
+    <Compile Include="Utility\ApiVersion\IApiVersionProvider.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="App_Start\Startup.Logging.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
@@ -124,8 +126,8 @@
     <Compile Include="Providers\DemoProvider.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Utility\ValidateModelAttribute.cs" />
-    <Compile Include="Utility\VersionConstraint.cs" />
-    <Compile Include="Utility\VersionedRouteAttribute.cs" />
+    <Compile Include="Utility\ApiVersion\VersionConstraint.cs" />
+    <Compile Include="Utility\ApiVersion\VersionedRouteAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

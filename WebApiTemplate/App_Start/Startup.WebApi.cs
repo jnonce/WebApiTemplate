@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Formatting;
-using System.Reflection;
 using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
-using FluentValidation;
-using FluentValidation.Attributes;
-using FluentValidation.WebApi;
 using Owin;
 using webapitmpl.Configuration;
 using webapitmpl.Utility;
+using webapitmpl.Utility.ApiVersion;
 
 namespace webapitmpl.App_Start
 {
@@ -63,6 +59,10 @@ namespace webapitmpl.App_Start
 
             // Autofac will create validators
             builder.RegisterFluentValidators(asm);
+
+            // Register the Api version provider
+            builder.RegisterInstance<IApiVersionProvider>(
+                new HttpHeaderApiVersionProvider("api-version"));
         }
     }
 }

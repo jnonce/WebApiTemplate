@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Web.Http.Routing;
 
-namespace webapitmpl.Utility
+namespace webapitmpl.Utility.ApiVersion
 {
     /// <summary>
     /// A versioned route endpoint
@@ -36,10 +32,19 @@ namespace webapitmpl.Utility
             this.MaxVersion = maxVersion;
         }
 
+        /// <summary>
+        /// Gets the minimum version for the Api.
+        /// </summary>
         public int MinVersion { get; private set; }
 
+        /// <summary>
+        /// Gets the maximum version for the Api.
+        /// </summary>
         public int MaxVersion { get; private set; }
 
+        /// <summary>
+        /// Gets the route constraints, if any; otherwise null.
+        /// </summary>
         public override IDictionary<string, object> Constraints
         {
             get

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Http.Routing;
@@ -44,14 +43,9 @@ namespace jnonce.WebApi.VersionedRouting
         {
             if (routeDirection == HttpRouteDirection.UriResolution)
             {
-                var services = GetApiVersionProviders(request);
-                if (services == null)
-                {
-                    return false;
-                }
-
                 SemVersion version;
-                if (TryGetApiVersion(services.OfType<IApiVersionProvider>(), request, out version) && this.isSupported(version))
+                var services = request.GetApiVersionProviders();
+                if (TryGetApiVersion(services, request, out version) && this.isSupported(version))
                 {
                     return true;
                 }
@@ -64,24 +58,6 @@ namespace jnonce.WebApi.VersionedRouting
                 // any url generation will match the given parameter values.
                 return true;
             }
-        }
-
-        private static IEnumerable<IApiVersionProvider> GetApiVersionProviders(HttpRequestMessage request)
-        {
-            // TODO: Support registering providers in   request.GetConfiguration().Properties
-            // We'll need some static class(es) to support:
-            //
-            // HttpConfiguration config = ...;
-            // config.SetApiVersionProviders(new HttpHeaderApiVersionProvider(...), new AcceptHeaderApiVersionProvider(...));
-            // IEnumerable<IApiVersionProvider> providers = config.GetApiVersionProviders();
-            //
-            // HttpRequestMessage request = ...;
-            // IEnumerable<IApiVersionProvider> providers = request.GetApiVersionProviders(); // read from config AND IoC
-
-            var dependencyScope = request.GetDependencyScope();
-            var services = dependencyScope.GetServices(typeof(IApiVersionProvider));
-
-            return services.OfType<IApiVersionProvider>();
         }
 
         private bool TryGetApiVersion(IEnumerable<IApiVersionProvider> providers, HttpRequestMessage request, out SemVersion version)

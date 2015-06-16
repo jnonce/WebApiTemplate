@@ -19,11 +19,12 @@ To set this up, add a versioning provider to HttpConfiguration:
 Then, annotate controllers:
 
     [RoutePrefix("api")]
+    [ApiVersion("1.0", "2.7")]
     public class WidgetController : ApiController
     {
 		// GET api/widget
         [HttpGet]
-        [VersionedRoute("widget", "1.0", "2.7")]
+        [ConstrainedRoute("widget")]
         public string WidgetV2_7()
         {
             return "2.7";
@@ -31,7 +32,8 @@ Then, annotate controllers:
 
 		// GET api/widget
         [HttpGet]
-        [VersionedRoute("widget", "3.0")]
+        [ApiVersion("3.0")]
+        [ConstrainedRoute("widget")]
         public string WidgetV3_0()
         {
             return "3.0";

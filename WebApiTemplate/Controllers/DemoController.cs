@@ -9,6 +9,7 @@ using webapitmpl.Utility;
 namespace webapitmpl.Controllers
 {
     [RoutePrefix("api")]
+    [ApiVersion("1.0", "2.7")]
     public class DemoController : ApiController
     {
         private DemoProvider provider;
@@ -21,7 +22,8 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [VersionedRoute("item", "1.0", "2.7")]
+        //[ApiVersion("1.0", "2.7")]
+        [ConstrainedRoute("item")]
         public string Foo(int itemId)
         {
             logger.Information("Demo action on {itemId}", itemId);
@@ -29,7 +31,8 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [VersionedRoute("item", "4.0", Name = "getItemV4")]
+        [ApiVersion("4.0")]
+        [ConstrainedRoute("item", Name = "getItemV4")]
         public string Foo4(int itemId, string coolName)
         {
             logger.Information("Demo action on {itemId}, {coolName}", itemId, coolName);

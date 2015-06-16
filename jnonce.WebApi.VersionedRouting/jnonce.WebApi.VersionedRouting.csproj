@@ -59,14 +59,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConstrainedRouteAttribute.cs" />
     <Compile Include="HttpHeaderApiVersionProvider.cs" />
     <Compile Include="IApiVersionProvider.cs" />
+    <Compile Include="IHttpRouteConstraintProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AcceptHeaderApiVersionProvider.cs" />
     <Compile Include="QueryStringApiVersionProvider.cs" />
     <Compile Include="ApiVersionProviderRetrievalExtensions.cs" />
     <Compile Include="VersionConstraint.cs" />
-    <Compile Include="VersionedRouteAttribute.cs" />
+    <Compile Include="ApiVersionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="jnonce.WebApi.VersionedRouting.nuspec" />

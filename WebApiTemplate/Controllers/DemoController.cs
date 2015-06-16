@@ -22,7 +22,6 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        //[ApiVersion("1.0", "2.7")]
         [ConstrainedRoute("item")]
         public string Foo(int itemId)
         {

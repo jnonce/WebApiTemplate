@@ -9,11 +9,11 @@ How To Use
 To set this up, add a versioning provider to HttpConfiguration:
 
     config.SetApiVersionProviders(
-		new HttpHeaderApiVersionProvider("x-api-version"),
-		new AcceptHeaderApiVersionProvider("vnd-api-version"),
-		new QueryStringApiVersionProvider("api-version")
-		);
-	config.MapHttpAttributeRoutes();
+        new HttpHeaderApiVersionProvider("x-api-version"),
+        new AcceptHeaderApiVersionProvider("vnd-api-version"),
+        new QueryStringApiVersionProvider("api-version")
+        );
+    config.MapHttpAttributeRoutes();
 
 
 Then, annotate controllers:
@@ -22,7 +22,7 @@ Then, annotate controllers:
     [ApiVersion("1.0", "2.7")]
     public class WidgetController : ApiController
     {
-		// GET api/widget
+        // GET api/widget
         [HttpGet]
         [ConstrainedRoute("widget")]
         public string WidgetV2_7()
@@ -30,7 +30,7 @@ Then, annotate controllers:
             return "2.7";
         }
 
-		// GET api/widget
+        // GET api/widget
         [HttpGet]
         [ApiVersion("3.0")]
         [ConstrainedRoute("widget")]
@@ -38,7 +38,7 @@ Then, annotate controllers:
         {
             return "3.0";
         }
-	}
+    }
 
 
 

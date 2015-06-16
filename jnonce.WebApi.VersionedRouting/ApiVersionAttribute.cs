@@ -8,6 +8,7 @@ namespace jnonce.WebApi.VersionedRouting
     /// <summary>
     /// Limit constrained route to particular Api versions
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
     public sealed class ApiVersionAttribute : Attribute, IHttpRouteConstraintProvider
     {
         /// <summary>

@@ -12,7 +12,7 @@ namespace webapitmpl.App_Start
     {
         public void ConfigureAuth(IAppBuilder app, IServiceConfiguration svcConfig, IContainer container)
         {
-			// Register authN here
+            // Register authN here
             // e.g. from Microsoft.Owin.Security.*
         }
     }

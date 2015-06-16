@@ -67,7 +67,7 @@
     <Compile Include="AcceptHeaderApiVersionProvider.cs" />
     <Compile Include="QueryStringApiVersionProvider.cs" />
     <Compile Include="ApiVersionProviderRetrievalExtensions.cs" />
-    <Compile Include="VersionConstraint.cs" />
+    <Compile Include="ApiVersionRouteConstraint.cs" />
     <Compile Include="ApiVersionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -48,7 +48,7 @@ namespace jnonce.WebApi.VersionedRouting
          /// <returns></returns>
         public IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> GetConstraints()
         {
-            var c = new VersionConstraint(
+            var c = new ApiVersionRouteConstraint(
                 givenVersion => (givenVersion >= MinVersion) && (givenVersion <= MaxVersion));
 
             yield return new KeyValuePair<string, IHttpRouteConstraint>("api-version", c);

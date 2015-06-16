@@ -9,15 +9,15 @@ namespace jnonce.WebApi.VersionedRouting
     /// <summary>
     /// A constraint for an Api which matches the Api version
     /// </summary>
-    public class VersionConstraint : IHttpRouteConstraint
+    public class ApiVersionRouteConstraint : IHttpRouteConstraint
     {
         private Func<SemVersion, bool> isSupported;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VersionConstraint"/> class.
+        /// Initializes a new instance of the <see cref="ApiVersionRouteConstraint"/> class.
         /// </summary>
         /// <param name="isSupported">Predicate identifying whether the given Api version is matched by this constraint.</param>
-        public VersionConstraint(Func<SemVersion, bool> isSupported)
+        public ApiVersionRouteConstraint(Func<SemVersion, bool> isSupported)
         {
             this.isSupported = isSupported;
         }

@@ -22,7 +22,7 @@ namespace webapitmpl.Controllers
         }
 
         [HttpGet]
-        [ConstrainedRoute("item")]
+        [Route("item")]
         public string Foo(int itemId)
         {
             logger.Information("Demo action on {itemId}", itemId);
@@ -31,7 +31,7 @@ namespace webapitmpl.Controllers
 
         [HttpGet]
         [ApiVersion("4.0")]
-        [ConstrainedRoute("item", Name = "getItemV4")]
+        [Route("item", Name = "getItemV4")]
         public string Foo4(int itemId, string coolName)
         {
             logger.Information("Demo action on {itemId}, {coolName}", itemId, coolName);

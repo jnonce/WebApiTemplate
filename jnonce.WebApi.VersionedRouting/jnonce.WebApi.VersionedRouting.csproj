@@ -59,7 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConstrainedRouteAttribute.cs" />
+    <Compile Include="ConstrainingDirectRouteProvider.cs" />
     <Compile Include="HttpHeaderApiVersionProvider.cs" />
     <Compile Include="IApiVersionProvider.cs" />
     <Compile Include="IHttpRouteConstraintProvider.cs" />

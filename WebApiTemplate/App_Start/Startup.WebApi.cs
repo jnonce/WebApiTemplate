@@ -28,8 +28,8 @@ namespace webapitmpl.App_Start
             config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
-            // Routing
-            config.MapHttpAttributeRoutes();
+            // Routing: Use attribute based direct routes with Api constraints
+            config.MapHttpAttributeRoutes(new ConstrainingDirectRouteProvider());
 
             // Validation
             config.UseAutofacFluentValidation(container);

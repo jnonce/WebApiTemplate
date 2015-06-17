@@ -13,7 +13,7 @@ To set this up, add a versioning provider to HttpConfiguration:
         new AcceptHeaderApiVersionProvider("vnd-api-version"),
         new QueryStringApiVersionProvider("api-version")
         );
-    config.MapHttpAttributeRoutes();
+    config.MapHttpAttributeRoutes(new ConstrainingDirectRouteProvider());
 
 
 Then, annotate controllers:
@@ -24,7 +24,7 @@ Then, annotate controllers:
     {
         // GET api/widget
         [HttpGet]
-        [ConstrainedRoute("widget")]
+        [Route("widget")]
         public string WidgetV2_7()
         {
             return "2.7";
@@ -33,7 +33,7 @@ Then, annotate controllers:
         // GET api/widget
         [HttpGet]
         [ApiVersion("3.0")]
-        [ConstrainedRoute("widget")]
+        [Route("widget")]
         public string WidgetV3_0()
         {
             return "3.0";

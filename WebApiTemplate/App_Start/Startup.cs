@@ -66,7 +66,7 @@ namespace webapitmpl.App_Start
             // Configure types
             if (FinalizeContainer != null)
             {
-                FinalizeContainer(builder);
+                container.UpdateRegistrations(FinalizeContainer);
             }
         }
     }

@@ -3,8 +3,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http.Tracing;
+using Autofac;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Serilog;
 using Serilog.Events;
 using webapitmpl.App_Start;
@@ -60,10 +63,18 @@ namespace WebApiTemplate.Test
         [TestMethod]
         public async Task TestGetItem40()
         {
+            var mock = new Mock<ISystemClock>();
+            mock.Setup(c => c.UtcNow)
+                .Returns(new DateTimeOffset(2010, 1, 1, 12, 0, 0, TimeSpan.Zero));
+
             using (var server = CreateServer(
                 startup =>
                 {
                     startup.ConfiguringLogging += ConfigureLogging;
+                    startup.FinalizeContainer += builder =>
+                        {
+                            builder.Register(c => mock.Object);
+                        };
                 })
                 )
             {
@@ -72,6 +83,8 @@ namespace WebApiTemplate.Test
                     .AddHeader("api-version", "4.0")
                     .GetAsync();
                 Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                Assert.AreEqual("1/1/2010 12:00:00 PM +00:00", await response.Content.ReadAsAsync<string>());
             }
         }
 

@@ -22,7 +22,7 @@ namespace webapitmpl.Providers
 
         public string GetTime()
         {
-            return systemClock.UtcNow.ToString();            
+            return systemClock.UtcNow.ToString();
         }
 
         public string GetUserAgent()

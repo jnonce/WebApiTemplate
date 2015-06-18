@@ -24,7 +24,7 @@ namespace jnonce.WebApi.VersionedRouting
         {
             IReadOnlyList<RouteEntry> result = base.GetActionDirectRoutes(actionDescriptor, factories, constraintResolver);
 
-            if (result.Count > 1)
+            if (result.Count > 0)
             {
                 IEnumerable<IHttpRouteConstraintProvider> controllerConstraints = actionDescriptor.ControllerDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
                 IEnumerable<IHttpRouteConstraintProvider> actionConstraints = actionDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
@@ -53,7 +53,7 @@ namespace jnonce.WebApi.VersionedRouting
         {
             IReadOnlyList<RouteEntry> result = GetControllerDirectRoutes(controllerDescriptor, actionDescriptors, factories, constraintResolver);
 
-            if (result.Count > 1)
+            if (result.Count > 0)
             {
                 IEnumerable<IHttpRouteConstraintProvider> controllerConstraints = controllerDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
 

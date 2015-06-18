@@ -5,16 +5,16 @@ using Microsoft.Owin.Logging;
 using Owin;
 using Serilog;
 using SerilogWeb.Owin;
-using webapitmpl.Configuration;
 using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
     public partial class Startup
-    {
+    {        
+        public event Func<LoggerConfiguration, LoggerConfiguration> ConfiguringLogging;
+
         public void ConfigureLogging(
             IAppBuilder app,
-            IServiceConfiguration svcConfig,
             IContainer container)
         {
             // Setup logging basics
@@ -24,10 +24,13 @@ namespace webapitmpl.App_Start
             loggingCfg = loggingCfg.Enrich.FromLogContext();
 
             // Pass logging config to configuration to setup sinks appropriate for our environment
-            loggingCfg = loggingCfg.WriteTo.Logger(ll => svcConfig.Configure(ll));
-                
+            if (ConfiguringLogging != null)
+            {
+                loggingCfg = loggingCfg.WriteTo.Logger(ll => ConfiguringLogging(ll));
+            }
+
             // Create the logger
-            Serilog.ILogger logger = loggingCfg.CreateLogger();            
+            Serilog.ILogger logger = loggingCfg.CreateLogger();
             Log.Logger = logger;
 
             // Update the container

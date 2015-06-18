@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{F4B505
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jnonce.WebApi.VersionedRouting", "jnonce.WebApi.VersionedRouting\jnonce.WebApi.VersionedRouting.csproj", "{57B28AE6-B063-4722-8A9F-A526A9B0054E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiTemplate.Test", "WebApiTemplate.Test\WebApiTemplate.Test.csproj", "{14C4B239-B570-48FA-BACB-DFEE85ED54B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57B28AE6-B063-4722-8A9F-A526A9B0054E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14C4B239-B570-48FA-BACB-DFEE85ED54B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14C4B239-B570-48FA-BACB-DFEE85ED54B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14C4B239-B570-48FA-BACB-DFEE85ED54B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14C4B239-B570-48FA-BACB-DFEE85ED54B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

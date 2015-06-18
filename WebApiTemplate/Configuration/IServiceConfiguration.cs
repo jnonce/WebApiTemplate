@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.Owin.Hosting;
+﻿using Microsoft.Owin.Hosting;
 
 namespace webapitmpl.Configuration
 {
+    /// <summary>
+    /// Configures the service
+    /// </summary>
     public interface IServiceConfiguration
     {
+        /// <summary>
+        /// Configures the specified start options.
+        /// </summary>
+        /// <param name="startOptions">The start options.</param>
         void Configure(StartOptions startOptions);
 
-        void Configure(HttpConfiguration config);
-
-        Serilog.LoggerConfiguration Configure(Serilog.LoggerConfiguration logging);
+        /// <summary>
+        /// Configures the specified startup sequence.
+        /// </summary>
+        /// <param name="startup">The startup sequence.</param>
+        void Configure(App_Start.Startup startup);
     }
 }

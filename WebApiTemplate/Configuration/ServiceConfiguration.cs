@@ -19,9 +19,18 @@ namespace webapitmpl.Configuration
         /// <returns>Configuration</returns>
         public static IServiceConfiguration GetCurrent()
         {
-            return new DevServiceConfiguration(
-                new ServiceConfiguration()
-                );
+            return new DevServiceConfiguration();
+        }
+
+        public static void OnStartup(webapitmpl.App_Start.Startup startup)
+        {
+            new DevServiceConfiguration().Configure(startup);
+        }
+
+        public void Configure(App_Start.Startup startup)
+        {
+            startup.ConfiguringWebApi += ConfiguringWebApi;
+            startup.ConfiguringLogging += ConfigureLogging;
         }
         
         public void Configure(StartOptions startOptions)
@@ -33,13 +42,13 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("https://+:443");
         }
 
-        public void Configure(System.Web.Http.HttpConfiguration config)
+        public void ConfiguringWebApi(System.Web.Http.HttpConfiguration config)
         {
             // Do not expose errors to callers
             config.IncludeErrorDetailPolicy = System.Web.Http.IncludeErrorDetailPolicy.Never;
         }
 
-        public Serilog.LoggerConfiguration Configure(Serilog.LoggerConfiguration logging)
+        public Serilog.LoggerConfiguration ConfigureLogging(Serilog.LoggerConfiguration logging)
         {
             // Ignore anything short of a warning from WebApi
             // However, don't hush the "System.Web.Http.Request" source, as it gives us Request start/end timings

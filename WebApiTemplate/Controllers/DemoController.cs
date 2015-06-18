@@ -25,8 +25,8 @@ namespace webapitmpl.Controllers
         [Route("item")]
         public string Foo(int itemId)
         {
-            logger.Information("Demo action on {itemId}", itemId);
-            return provider.Get();
+            logger.Information("Demo action v2.7 on {itemId}", itemId);
+            return provider.GetUserAgent();
         }
 
         [HttpGet]
@@ -34,9 +34,9 @@ namespace webapitmpl.Controllers
         [Route("item", Name = "getItemV4")]
         public string Foo4(int itemId, string coolName)
         {
-            logger.Information("Demo action on {itemId}, {coolName}", itemId, coolName);
+            logger.Information("Demo action v4 on {itemId}, {coolName}", itemId, coolName);
             string test = this.Url.Link("getItemV4", new { itemId = 1, coolName = "e" });
-            return provider.Get();
+            return provider.GetTime();
         }
 
         [HttpPost]

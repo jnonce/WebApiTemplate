@@ -1,22 +1,43 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
 using Owin;
 using webapitmpl.Configuration;
 using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
+    /// <summary>
+    /// d
+    /// </summary>
     public partial class Startup
     {
+        /// <summary>
+        /// Configure the container
+        /// </summary>
+        public event Action<ContainerBuilder> ConfiguringContainer;
+
+        /// <summary>
+        /// Finalize the container after all other configuration is complete
+        /// </summary>
+        public event Action<ContainerBuilder> FinalizeContainer;
+
         public void Configuration(IAppBuilder app)
         {
-            // Load configuration
-            IServiceConfiguration svcConfig = ServiceConfiguration.GetCurrent();
+            // Monitor
+            ServiceConfiguration.OnStartup(this);
+            ConfigurationPostCfg(app);
+        }
 
+        public void ConfigurationPostCfg(IAppBuilder app)
+        {
             // Begin registering a container
             ContainerBuilder builder = new ContainerBuilder();
 
-            // Register the configuration into the container
-            builder.RegisterInstance(svcConfig).ExternallyOwned();
+            // Configure types
+            if (ConfiguringContainer != null)
+            {
+                ConfiguringContainer(builder);
+            }
 
             // Register service types
             builder.RegisterType<webapitmpl.Providers.DemoProvider>()
@@ -34,13 +55,19 @@ namespace webapitmpl.App_Start
             app.UseAutofacMiddleware(container);
 
             // Logging config
-            ConfigureLogging(app, svcConfig, container);
+            ConfigureLogging(app, container);
 
             // Auth
-            ConfigureAuth(app, svcConfig, container);
+            ConfigureAuth(app, container);
 
             // WebApi config
-            ConfigureWebApi(app, svcConfig, container);
+            ConfigureWebApi(app, container);
+
+            // Configure types
+            if (FinalizeContainer != null)
+            {
+                FinalizeContainer(builder);
+            }
         }
     }
 }

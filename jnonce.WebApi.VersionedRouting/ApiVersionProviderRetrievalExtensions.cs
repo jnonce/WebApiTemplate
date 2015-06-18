@@ -9,6 +9,7 @@ namespace jnonce.WebApi.VersionedRouting
     /// <summary>
     /// Extension methods for storing an retrieving <see cref="IApiVersionProvider"/>
     /// </summary>]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static class ApiVersionProviderRetrievalExtensions
     {
         private const string ServiceStoreKey = "jnonce.WebApi.VersionedRouting.IApiVersionProvider";

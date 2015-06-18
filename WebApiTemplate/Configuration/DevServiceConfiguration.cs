@@ -11,24 +11,23 @@ namespace webapitmpl.Configuration
     /// </summary>
     internal class DevServiceConfiguration : IServiceConfiguration
     {
-        private IServiceConfiguration general;
-
-        public DevServiceConfiguration(IServiceConfiguration general)
-        {
-            this.general = general;
-        }
-
         public void Configure(Microsoft.Owin.Hosting.StartOptions startOptions)
         {
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public void Configure(HttpConfiguration config)
+        public void Configure(App_Start.Startup startup)
+        {
+            startup.ConfiguringLogging += ConfigureLogging;
+            startup.ConfiguringWebApi += ConfiguringWebApi;
+        }
+
+        public void ConfiguringWebApi(HttpConfiguration config)
         {
             config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
         }
 
-        public Serilog.LoggerConfiguration Configure(Serilog.LoggerConfiguration logging)
+        public Serilog.LoggerConfiguration ConfigureLogging(Serilog.LoggerConfiguration logging)
         {
             var webApiHushFilter = new LevelFromTypeLogEventFilter(
                 LogEventLevel.Warning,
@@ -51,7 +50,7 @@ namespace webapitmpl.Configuration
                     .WriteTo.LiterateConsole()
                 );
 
-            return general.Configure(logging);
+            return logging;
         }
 
     }

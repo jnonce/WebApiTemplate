@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
 using jnonce.WebApi.VersionedRouting;
@@ -10,9 +11,10 @@ namespace webapitmpl.App_Start
 {
     public partial class Startup
     {
+        public event Action<HttpConfiguration> ConfiguringWebApi;
+
         public void ConfigureWebApi(
             IAppBuilder app,
-            IServiceConfiguration svcConfig,
             IContainer container)
         {
             var config = new HttpConfiguration();
@@ -22,7 +24,10 @@ namespace webapitmpl.App_Start
                 );
 
             // Allow config to modify WebApi
-            svcConfig.Configure(config);
+            if (ConfiguringWebApi != null)
+            {
+                ConfiguringWebApi(config);
+            }
 
             // Enforce specific Json formatting
             config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;

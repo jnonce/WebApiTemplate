@@ -10,7 +10,7 @@ namespace webapitmpl.App_Start
 {
     public partial class Startup
     {
-        public void ConfigureAuth(IAppBuilder app, IServiceConfiguration svcConfig, IContainer container)
+        public void ConfigureAuth(IAppBuilder app, IContainer container)
         {
             // Register authN here
             // e.g. from Microsoft.Owin.Security.*

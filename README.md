@@ -13,3 +13,5 @@ Current features:
   * Errors or warnings seen by WebApi or Owin
 * Validation via [FluentValidation](https://github.com/JeremySkinner/FluentValidation)
 * Dependency Injection via [Autofac](https://github.com/autofac/Autofac)
+* Tests via mstest
+* Mocking via [Moq](https://github.com/Moq/moq4)

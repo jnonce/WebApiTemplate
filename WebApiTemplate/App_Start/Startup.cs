@@ -21,13 +21,23 @@ namespace webapitmpl.App_Start
         /// </summary>
         public event Action<ContainerBuilder> FinalizeContainer;
 
+        /// <summary>
+        /// Configurations the application
+        /// </summary>
+        /// <param name="app">The application.</param>
         public void Configuration(IAppBuilder app)
         {
-            // Monitor
+            // Allow configuration to modify the default application startup
             ServiceConfiguration.OnStartup(this);
+
+            // Continue with general setup
             ConfigurationPostCfg(app);
         }
 
+        /// <summary>
+        /// Configurations the application
+        /// </summary>
+        /// <param name="app">The application.</param>
         public void ConfigurationPostCfg(IAppBuilder app)
         {
             // Begin registering a container

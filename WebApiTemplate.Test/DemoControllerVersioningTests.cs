@@ -2,19 +2,16 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Infrastructure;
-using Microsoft.Owin.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Serilog;
-using Serilog.Events;
-using webapitmpl.App_Start;
-using webapitmpl.Utility;
 
 namespace WebApiTemplate.Test
 {
+    /// <summary>
+    /// Unit tests for the demo controller's versioned routing
+    /// </summary>
     [TestClass]
     public class DemoControllerVersioningTests
     {
@@ -23,12 +20,7 @@ namespace WebApiTemplate.Test
         [TestMethod]
         public async Task TestGetItem27()
         {
-            using (var server = CreateServer(
-                startup =>
-                {
-                    startup.ConfiguringLogging += ConfigureLogging;
-                })
-                )
+            using (var server = WebApiTemplateTestServer.CreateServer())
             {
                 string headerValue = Guid.NewGuid().ToString();
 
@@ -37,6 +29,7 @@ namespace WebApiTemplate.Test
                     .AddHeader("api-version", "2.0")
                     .AddHeader("User-Agent", headerValue)
                     .GetAsync();
+
                 Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
                 Assert.AreEqual(headerValue, await response.Content.ReadAsAsync<string>());
             }
@@ -45,12 +38,7 @@ namespace WebApiTemplate.Test
         [TestMethod]
         public async Task TestGetItem30()
         {
-            using (var server = CreateServer(
-                startup =>
-                {
-                    startup.ConfiguringLogging += ConfigureLogging;
-                })
-                )
+            using (var server = WebApiTemplateTestServer.CreateServer())
             {
                 HttpResponseMessage response = await
                     server.CreateRequest("api/item?itemId=22&coolName=g")
@@ -67,10 +55,10 @@ namespace WebApiTemplate.Test
             mock.Setup(c => c.UtcNow)
                 .Returns(new DateTimeOffset(2010, 1, 1, 12, 0, 0, TimeSpan.Zero));
 
-            using (var server = CreateServer(
+            using (var server = WebApiTemplateTestServer.CreateServer(
                 startup =>
                 {
-                    startup.ConfiguringLogging += ConfigureLogging;
+                    startup.ConfiguringLogging += WebApiTemplateTestServer.ConfigureStdLogging;
                     startup.FinalizeContainer += builder =>
                         {
                             builder.Register(c => mock.Object);
@@ -86,39 +74,6 @@ namespace WebApiTemplate.Test
 
                 Assert.AreEqual("1/1/2010 12:00:00 PM +00:00", await response.Content.ReadAsAsync<string>());
             }
-        }
-
-        public TestServer CreateServer(Action<Startup> onStart)
-        {
-            return TestServer.Create(
-                app =>
-                {
-                    var startup = new webapitmpl.App_Start.Startup();
-                    onStart(startup);
-                    startup.ConfigurationPostCfg(app);
-                });
-        }
-
-        private LoggerConfiguration ConfigureLogging(LoggerConfiguration config)
-        {
-            var sink = new TestLogEventSink(this.TestContext);
-            var webApiHushFilter = new LevelFromTypeLogEventFilter(
-                LogEventLevel.Warning,
-                new []
-                {
-                    TraceCategories.ActionCategory,
-                    TraceCategories.ControllersCategory,
-                    TraceCategories.FiltersCategory,
-                    TraceCategories.FormattingCategory,
-                    TraceCategories.MessageHandlersCategory,
-                    TraceCategories.ModelBindingCategory,
-                    TraceCategories.RequestCategory,
-                    TraceCategories.RoutingCategory
-                });
-
-            return config
-                .Filter.With(webApiHushFilter)
-                .WriteTo.Sink(sink);
         }
     }
 }

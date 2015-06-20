@@ -56,7 +56,7 @@ namespace webapitmpl.Utility
                     string id = ctx.GetCorrelationId();
                     if (id != null)
                     {
-                        ctx.Response.Headers.Add(header, new[] { id });
+                        ctx.Response.Headers.Set(header, id);
                     }
                 };
 

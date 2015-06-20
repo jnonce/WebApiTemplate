@@ -46,6 +46,11 @@ namespace webapitmpl.Controllers
             [FromBody]
             WidgetCreate widget)
         {
+            if (widget == null)
+            {
+                return BadRequest();
+            }
+
             return CreatedAtRoute(
                 "UpdateWidget",
                 new { name = widget.Name }, 

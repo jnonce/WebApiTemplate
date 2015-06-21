@@ -75,5 +75,21 @@ namespace WebApiTemplate.Test
                 Assert.AreEqual("1/1/2010 12:00:00 PM +00:00", await response.Content.ReadAsAsync<string>());
             }
         }
+
+        [TestMethod]
+        public async Task TestItemWithVersionInPath()
+        {
+            using (var server = WebApiTemplateTestServer.CreateServer())
+            {
+                HttpResponseMessage response = await server.HttpClient.GetAsync("api/v2.0/wedge");
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                response = await server.HttpClient.GetAsync("api/v2.1/wedge");
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                response = await server.HttpClient.GetAsync("api/v2.9/wedge");
+                Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            }
+        }
     }
 }

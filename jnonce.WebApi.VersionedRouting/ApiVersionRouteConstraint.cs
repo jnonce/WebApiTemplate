@@ -35,28 +35,45 @@ namespace jnonce.WebApi.VersionedRouting
         /// </returns>
         /// <exception cref="System.InvalidOperationException"></exception>
         public bool Match(
-            HttpRequestMessage request, 
-            IHttpRoute route, 
-            string parameterName, 
-            IDictionary<string, object> values, 
+            HttpRequestMessage request,
+            IHttpRoute route,
+            string parameterName,
+            IDictionary<string, object> values,
             HttpRouteDirection routeDirection)
         {
             if (routeDirection == HttpRouteDirection.UriResolution)
             {
-                SemVersion version;
-                var services = request.GetApiVersionProviders();
-                if (TryGetApiVersion(services, request, out version) && this.isSupported(version))
-                {
-                    return true;
-                }
+                var services = GetApiVersionProviders(request, parameterName, values);
 
-                return false;
+                SemVersion version;
+                return TryGetApiVersion(services, request, out version)
+                    && this.isSupported(version);
             }
             else
             {
                 // Given that route parameters are given out of band, we can presume that
                 // any url generation will match the given parameter values.
                 return true;
+            }
+        }
+
+        // Get the version providers
+        private IEnumerable<IApiVersionProvider> GetApiVersionProviders(
+            HttpRequestMessage request,
+            string parameterName,
+            IDictionary<string, object> values)
+        {
+            // If the route contained a parsed parameter  value (from within the url) then we examine it
+            object parameterValue;
+            if (values.TryGetValue(parameterName, out parameterValue))
+            {
+                yield return new ProvidedApiVersionProvider(parameterValue);
+            }
+
+            // Take version information from a typical, url parameter.
+            foreach (IApiVersionProvider provider in request.GetApiVersionProviders())
+            {
+                yield return provider;
             }
         }
 
@@ -72,6 +89,36 @@ namespace jnonce.WebApi.VersionedRouting
 
             version = null;
             return false;
+        }
+
+        // Api version provider which parses a single value
+        // (value is extracted from a url part)
+        private sealed class ProvidedApiVersionProvider : IApiVersionProvider
+        {
+            private object parameterValue;
+
+            public ProvidedApiVersionProvider(object parameterValue)
+            {
+                this.parameterValue = parameterValue;
+            }
+
+            public bool TryGetApiVersion(HttpRequestMessage message, out SemVersion version)
+            {
+                version = parameterValue as SemVersion;
+                if (version != null)
+                {
+                    return true;
+                }
+
+                string versionString = parameterValue as string;
+                if (versionString != null && SemVersion.TryParse(versionString, out version))
+                {
+                    return true;
+                }
+
+                version = null;
+                return false;
+            }
         }
     }
 }

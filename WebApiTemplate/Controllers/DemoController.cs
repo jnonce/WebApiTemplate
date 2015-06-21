@@ -39,6 +39,15 @@ namespace webapitmpl.Controllers
             return provider.GetTime();
         }
 
+        [HttpGet]
+        [Route("v{api-version}/wedge")]
+        public IHttpActionResult ItemWithPathVersion()
+        {
+            logger.Information("Item retrieved with item in path, still respecting the ApiVersionAttribute");
+            return Ok();
+        }
+
+
         [HttpPost]
         [Route("widget")]
         [ValidateModel]

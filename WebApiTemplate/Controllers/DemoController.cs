@@ -47,6 +47,23 @@ namespace webapitmpl.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [AnyApiVersion]
+        [Route("biggs")]
+        public IHttpActionResult ItemWithoutRouteConstraint()
+        {
+            logger.Information("Item retrieved ignoring controller's api version");
+            return Ok();
+        }
+
+        [HttpGet]
+        [ApiVersion("7.2"), ApiVersion("7.7")]
+        [Route("vic")]
+        public string ItemWithTwoVersionConstraints()
+        {
+            logger.Information("Item retrieved from vic Version 7.2 or 7.7");
+            return "vic Version 7.2 or 7.7";
+        }
 
         [HttpPost]
         [Route("widget")]

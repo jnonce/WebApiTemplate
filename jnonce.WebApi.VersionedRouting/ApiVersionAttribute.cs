@@ -8,7 +8,7 @@ namespace jnonce.WebApi.VersionedRouting
     /// <summary>
     /// Limit constrained route to particular Api versions
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = false, AllowMultiple = true)]
     public sealed class ApiVersionAttribute : Attribute, IHttpRouteConstraintProvider
     {
         /// <summary>
@@ -51,7 +51,7 @@ namespace jnonce.WebApi.VersionedRouting
             var c = new ApiVersionRouteConstraint(
                 givenVersion => (givenVersion >= MinVersion) && (givenVersion <= MaxVersion));
 
-            yield return new KeyValuePair<string, IHttpRouteConstraint>("api-version", c);
+            yield return new KeyValuePair<string, IHttpRouteConstraint>(ApiVersionRouteConstraint.ConstraintKey, c);
         }
     }
 }

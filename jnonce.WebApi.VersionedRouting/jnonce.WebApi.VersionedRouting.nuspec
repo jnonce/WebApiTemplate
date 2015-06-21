@@ -6,7 +6,7 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <!--<licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>-->
+    <licenseUrl>https://github.com/jnonce/WebApiTemplate/blob/master/license.txt</licenseUrl>
     <projectUrl>https://github.com/jnonce/WebApiTemplate</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>

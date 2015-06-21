@@ -91,5 +91,40 @@ namespace WebApiTemplate.Test
                 Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
+
+        [TestMethod]
+        public async Task TestAllowNoVersionOnAction()
+        {
+            using (var server = WebApiTemplateTestServer.CreateServer())
+            {
+                HttpResponseMessage response = await server.HttpClient.GetAsync("api/biggs");
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            }
+        }
+
+        [TestMethod]
+        public async Task TestMultipleVersions()
+        {
+            using (var server = WebApiTemplateTestServer.CreateServer())
+            {
+                HttpResponseMessage response = await
+                    server.CreateRequest("api/vic")
+                    .AddHeader("api-version", "1.0")
+                    .GetAsync();
+                Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+
+                response = await
+                    server.CreateRequest("api/vic")
+                    .AddHeader("api-version", "7.2")
+                    .GetAsync();
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+
+                response = await
+                    server.CreateRequest("api/vic")
+                    .AddHeader("api-version", "7.7")
+                    .GetAsync();
+                Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            }
+        }
     }
 }

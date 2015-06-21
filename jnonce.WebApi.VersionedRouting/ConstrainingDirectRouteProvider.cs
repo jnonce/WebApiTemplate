@@ -26,13 +26,18 @@ namespace jnonce.WebApi.VersionedRouting
 
             if (result.Count > 0)
             {
-                IEnumerable<IHttpRouteConstraintProvider> controllerConstraints = actionDescriptor.ControllerDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
-                IEnumerable<IHttpRouteConstraintProvider> actionConstraints = actionDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
+                // Get constraints which are set at the controller level
+                IEnumerable<IHttpRouteConstraintProvider> controllerConstraintProviders = 
+                    actionDescriptor.ControllerDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
+                IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> controllerConstraints = GetPeerRouteConstraints(controllerConstraintProviders);
 
-                var constraints = controllerConstraints.Concat(actionConstraints)
-                    .SelectMany(provider => provider.GetConstraints());
+                // Get constraints which are set at action level
+                IEnumerable<IHttpRouteConstraintProvider> actionConstraintProviders = 
+                    actionDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
+                IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> actionConstraints = GetPeerRouteConstraints(actionConstraintProviders);
 
-                AddConstraints(result, constraints);
+                // Add them to the routes
+                AddConstraints(result, controllerConstraints.Concat(actionConstraints));
             }
 
             return result;
@@ -55,11 +60,13 @@ namespace jnonce.WebApi.VersionedRouting
 
             if (result.Count > 0)
             {
-                IEnumerable<IHttpRouteConstraintProvider> controllerConstraints = controllerDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
+                // Get constraints which are set at the controller level
+                IEnumerable<IHttpRouteConstraintProvider> controllerConstraintProviders =
+                    controllerDescriptor.GetCustomAttributes<IHttpRouteConstraintProvider>();
+                IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> controllerConstraints = GetPeerRouteConstraints(controllerConstraintProviders);
 
-                var constraints = controllerConstraints.SelectMany(provider => provider.GetConstraints());
-
-                AddConstraints(result, constraints);
+                // Add them to the routes
+                AddConstraints(result, controllerConstraints);
             }
 
             return result;
@@ -77,6 +84,23 @@ namespace jnonce.WebApi.VersionedRouting
                     route.Route.Constraints[constraint.Key] = constraint.Value;
                 }
             }
+        }
+
+        // Gets route constraints from providers which are considered "peers" (not able to override each other)
+        private static IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> GetPeerRouteConstraints(IEnumerable<IHttpRouteConstraintProvider> providers)
+        {
+            // Get the constraints
+            IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> constraints =
+                providers.SelectMany(provider => provider.GetConstraints());
+
+            // Merge overlapping items
+            IEnumerable<KeyValuePair<string, IHttpRouteConstraint>> grouped =
+                constraints.GroupBy(
+                    pair => pair.Key,
+                    pair => pair.Value,
+                    (key, values) => new KeyValuePair<string, IHttpRouteConstraint>(key, CompoundAnyRouteConstraint.Create(values)));
+
+            return grouped;
         }
     }
 }

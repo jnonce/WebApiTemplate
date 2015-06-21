@@ -11,6 +11,11 @@ namespace jnonce.WebApi.VersionedRouting
     /// </summary>
     public class ApiVersionRouteConstraint : IHttpRouteConstraint
     {
+        /// <summary>
+        /// The key used when creating the constraint.
+        /// </summary>
+        public const string ConstraintKey = "api-version";
+
         private Func<SemVersion, bool> isSupported;
 
         /// <summary>

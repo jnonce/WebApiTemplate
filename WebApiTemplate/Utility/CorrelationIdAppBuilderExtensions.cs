@@ -7,6 +7,9 @@ using Serilog.Context;
 
 namespace webapitmpl.Utility
 {
+    /// <summary>
+    /// Extensions for <see cref="IAppBuilder"/> involving correlation ids
+    /// </summary>
     public static class CorrelationIdAppBuilderExtensions
     {
         /// <summary>

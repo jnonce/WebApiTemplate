@@ -8,6 +8,9 @@ namespace webapitmpl.Models
     /// </summary>
     public class WidgetValidator : AbstractValidator<Widget>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WidgetValidator"/> class.
+        /// </summary>
         public WidgetValidator()
         {
             RuleFor(x => x.Name).Length(1, 20);
@@ -15,6 +18,9 @@ namespace webapitmpl.Models
         }
     }
 
+    /// <summary>
+    /// Widget used to create
+    /// </summary>
     [Validator(typeof(WidgetCreateValidator))]
     public class WidgetCreate : Widget { }
 
@@ -24,12 +30,18 @@ namespace webapitmpl.Models
     /// </summary>
     public class WidgetCreateValidator : WidgetValidator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WidgetCreateValidator"/> class.
+        /// </summary>
         public WidgetCreateValidator()
         {
             RuleFor(x => x.Name).NotNull();
         }
     }
 
+    /// <summary>
+    /// Widget used during update
+    /// </summary>
     [Validator(typeof(WidgetUpdateValidator))]
     public class WidgetUpdate : Widget { }
 
@@ -38,6 +50,9 @@ namespace webapitmpl.Models
     /// </summary>
     public class WidgetUpdateValidator : WidgetValidator
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WidgetUpdateValidator"/> class.
+        /// </summary>
         public WidgetUpdateValidator()
         {
         }

@@ -2,6 +2,9 @@
 
 namespace webapitmpl.Utility
 {
+    /// <summary>
+    /// Owin extensions to support correlation ids
+    /// </summary>
     public static class CorrelationIdOwinContextExtensions
     {
         private const string CorrelationIdKey = "requestCorrelationId";

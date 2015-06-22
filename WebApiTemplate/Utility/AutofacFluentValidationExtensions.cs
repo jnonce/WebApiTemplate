@@ -18,7 +18,7 @@ namespace webapitmpl.Utility
         /// <param name="assemblies">The assemblies from which to find model types.</param>
         /// <remarks>
         /// Scan for classes with <see cref="ValidatorAttribute"/> applied.  The ValidatorType
-        /// specified is registered as a component and provides the appropriate <see cref="IValidator`1"/>
+        /// specified is registered as a component and provides the appropriate <see cref="T:IValidator`1"/>
         /// service.
         /// </remarks>
         public static void RegisterFluentValidators(

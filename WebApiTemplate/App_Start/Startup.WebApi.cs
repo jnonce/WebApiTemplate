@@ -4,7 +4,6 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using jnonce.WebApi.VersionedRouting;
 using Owin;
-using webapitmpl.Configuration;
 using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
@@ -38,6 +37,9 @@ namespace webapitmpl.App_Start
 
             // Validation
             config.UseAutofacFluentValidation(container);
+
+            // Swagger (documentation)
+            ConfigureDocs(app, container, config);
 
             // Pull the OWIN dependency scope into WebApi's request state
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

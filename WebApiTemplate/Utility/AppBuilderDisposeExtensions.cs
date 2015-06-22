@@ -4,6 +4,9 @@ using Owin;
 
 namespace webapitmpl.Utility
 {
+    /// <summary>
+    /// Extensions for <see cref="IAppBuilder"/> adding dispose event handling
+    /// </summary>
     public static class AppBuilderDisposeExtensions
     {
         /// <summary>

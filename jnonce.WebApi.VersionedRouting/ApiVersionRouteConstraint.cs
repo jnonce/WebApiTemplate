@@ -62,6 +62,17 @@ namespace jnonce.WebApi.VersionedRouting
             }
         }
 
+        /// <summary>
+        /// Matches the specified target API version.
+        /// </summary>
+        /// <param name="targetApiVersion">The target API version.</param>
+        /// <returns></returns>
+        public bool Match(string targetApiVersion)
+        {
+            SemVersion version;
+            return SemVersion.TryParse(targetApiVersion, out version) && this.isSupported(version);
+        }
+
         // Get the version providers
         private IEnumerable<IApiVersionProvider> GetApiVersionProviders(
             HttpRequestMessage request,

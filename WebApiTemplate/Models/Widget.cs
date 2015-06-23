@@ -8,17 +8,17 @@ namespace webapitmpl.Models
     public class Widget
     {
         /// <summary>
-        /// Gets or sets the name.
+        /// The Widget's name
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the description.
+        /// A human readable description of the widget
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the created date.
+        /// Date and time when the widget was created.
         /// </summary>
         public DateTime CreatedDate { get; set; }
     }

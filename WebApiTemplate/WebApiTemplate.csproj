@@ -122,7 +122,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\Startup.Docs.cs" />
+    <Compile Include="App_Start\Startup.Docs.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Configuration\DevServiceConfiguration.cs" />
     <Compile Include="Configuration\IServiceConfiguration.cs" />
     <Compile Include="Models\Widget.cs" />
@@ -158,6 +160,9 @@
       <Project>{57b28ae6-b063-4722-8a9f-a526a9b0054e}</Project>
       <Name>jnonce.WebApi.VersionedRouting</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="swagger\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

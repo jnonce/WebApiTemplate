@@ -3,6 +3,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using jnonce.WebApi.VersionedRouting;
 using Serilog;
+using Swashbuckle.Swagger.Annotations;
 using webapitmpl.Models;
 using webapitmpl.Providers;
 using webapitmpl.Utility;
@@ -114,6 +115,7 @@ namespace webapitmpl.Controllers
         [HttpPost]
         [Route("widget")]
         [ValidateModel]
+        [SwaggerResponse(201, "Account Created")]
         public IHttpActionResult CreateWidget(
             [FromBody]
             WidgetCreate widget)
@@ -162,6 +164,7 @@ namespace webapitmpl.Controllers
         /// <exception cref="InvalidTimeZoneException"></exception>
         [HttpGet]
         [Route("fail")]
+        [SwaggerResponse(500, "Operation failed")]
         public void Fail()
         {
             throw new InvalidTimeZoneException();

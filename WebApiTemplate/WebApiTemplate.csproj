@@ -130,6 +130,7 @@
     <Compile Include="Models\Widget.cs" />
     <Compile Include="Models\WidgetValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\AddedParametersSwaggerOperationFilter.cs" />
     <Compile Include="Utility\AppBuilderDisposeExtensions.cs" />
     <Compile Include="Utility\AutofacFluentValidationExtensions.cs" />
     <Compile Include="Utility\AutofacRegistrationExtensions.cs" />

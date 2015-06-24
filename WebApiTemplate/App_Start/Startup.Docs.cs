@@ -5,6 +5,7 @@ using Autofac;
 using jnonce.WebApi.VersionedRouting;
 using Owin;
 using Swashbuckle.Application;
+using Swashbuckle.Swagger;
 using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
@@ -30,12 +31,44 @@ namespace webapitmpl.App_Start
             }
         }
 
+        // Configure the Swagger UI presentation
         private static void ConfigureSwaggerUI(SwaggerUiConfig swaggerUi)
         {
             swaggerUi.EnableDiscoveryUrlSelector();
         }
 
+        // Configure Swagger's document generation
         private void ConfigureSwagger(SwaggerDocsConfig swagger)
+        {
+            ConfigureSwaggerFromXmlComments(swagger);
+
+            swagger.MultipleApiVersions(ApiDescriptionMatchesVersion, ConfigureSwaggerVersions);
+
+            // Add optional parameters to every API.
+            // This is needed to let callers know about parameters which aren't directly exposed
+            // on a controller or action.
+            swagger.OperationFilter(
+                () => new AddedParametersSwaggerOperationFilter(
+                    new Parameter
+                    {
+                        name = "x-correlation-id",
+                        description = "Request correlation id",
+                        type = "string",
+                        @in = "header",
+                        required = false
+                    },
+                    new Parameter
+                    {
+                        name = "api-version",
+                        description = "API version to access",
+                        type = "string",
+                        @in = "header",
+                        required = false
+                    })
+                );
+        }
+
+        private static void ConfigureSwaggerFromXmlComments(SwaggerDocsConfig swagger)
         {
             var codebaseUri = new Uri(typeof(Startup).Assembly.CodeBase);
             string path = Path.ChangeExtension(codebaseUri.LocalPath, "xml");
@@ -44,8 +77,6 @@ namespace webapitmpl.App_Start
             {
                 swagger.IncludeXmlComments(path);
             }
-
-            swagger.MultipleApiVersions(ApiDescriptionMatchesVersion, ConfigureSwaggerVersions);
         }
 
         private void ConfigureSwaggerVersions(VersionInfoBuilder versionInfoBuilder)

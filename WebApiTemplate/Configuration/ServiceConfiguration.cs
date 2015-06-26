@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using Autofac;
 using Microsoft.Owin.Hosting;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.RollingFile;
+using webapitmpl.App_Start;
 using webapitmpl.Utility;
 using LogEventLevel = Serilog.Events.LogEventLevel;
 using TraceCategories = System.Web.Http.Tracing.TraceCategories;
@@ -22,15 +24,24 @@ namespace webapitmpl.Configuration
             return new DevServiceConfiguration();
         }
 
-        public static void OnStartup(webapitmpl.App_Start.Startup startup)
+        public static void OnStartup(ContainerBuilder builder)
         {
-            new DevServiceConfiguration().Configure(startup);
+            new DevServiceConfiguration().Configure(builder);
         }
 
-        public void Configure(App_Start.Startup startup)
+        public void Configure(ContainerBuilder builder)
         {
-            startup.ConfiguringWebApi += ConfiguringWebApi;
-            startup.ConfiguringLogging += ConfigureLogging;
+            builder.RegisterModule<ProviderServicesModule>();
+            builder.RegisterModule(
+                new WebApiServicesModule
+                {
+                    ConfiguringWebApi = ConfiguringWebApi
+                });
+            builder.RegisterModule(
+                new LoggingServicesModule
+                {
+                    ConfiguringLogging = ConfigureLogging
+                });
         }
         
         public void Configure(StartOptions startOptions)

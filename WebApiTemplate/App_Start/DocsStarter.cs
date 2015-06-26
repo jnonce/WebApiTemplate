@@ -3,32 +3,29 @@ using System.IO;
 using System.Web.Http;
 using Autofac;
 using jnonce.WebApi.VersionedRouting;
-using Owin;
 using Swashbuckle.Application;
 using Swashbuckle.Swagger;
 using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    public partial class Startup
+    /// <summary>
+    /// Augment the HttpConfiguration with routes for Swagger docs
+    /// </summary>
+    internal class DocsStarter : IStartable
     {
-        /// <summary>
-        /// Configures the docs.
-        /// </summary>
-        /// <param name="app">The application.</param>
-        /// <param name="container">The container.</param>
-        /// <param name="config">The configuration.</param>
-        public void ConfigureDocs(
-            IAppBuilder app,
-            IContainer container,
-            HttpConfiguration config)
+        private HttpConfiguration config;
+
+        public DocsStarter(HttpConfiguration config)
         {
-            if (config.IncludeErrorDetailPolicy == IncludeErrorDetailPolicy.Always)
-            {
-                config
-                    .EnableSwagger(ConfigureSwagger)
-                    .EnableSwaggerUi(ConfigureSwaggerUI);
-            }
+            this.config = config;
+        }
+
+        public void Start()
+        {
+            config
+                .EnableSwagger(ConfigureSwagger)
+                .EnableSwaggerUi(ConfigureSwaggerUI);
         }
 
         // Configure the Swagger UI presentation

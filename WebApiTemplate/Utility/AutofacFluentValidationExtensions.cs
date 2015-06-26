@@ -66,7 +66,7 @@ namespace webapitmpl.Utility
         /// </summary>
         /// <param name="config">The WebAPI Http configuration.</param>
         /// <param name="container">The container from which validators will be retrieved.</param>
-        public static void UseAutofacFluentValidation(this System.Web.Http.HttpConfiguration config, IContainer container)
+        public static void UseAutofacFluentValidation(this System.Web.Http.HttpConfiguration config, ILifetimeScope container)
         {
             FluentValidationModelValidatorProvider.Configure(
                 config,

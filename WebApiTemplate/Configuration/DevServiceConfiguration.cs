@@ -1,5 +1,7 @@
 ﻿using System.Web.Http;
+using Autofac;
 using Serilog;
+using webapitmpl.App_Start;
 using webapitmpl.Utility;
 using LogEventLevel = Serilog.Events.LogEventLevel;
 using TraceCategories = System.Web.Http.Tracing.TraceCategories;
@@ -16,10 +18,27 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public void Configure(App_Start.Startup startup)
+        public void Configure(ContainerBuilder builder)
         {
-            startup.ConfiguringLogging += ConfigureLogging;
-            startup.ConfiguringWebApi += ConfiguringWebApi;
+            // Register primary services
+            builder.RegisterModule<ProviderServicesModule>();
+
+            // Allow documentation to be generated
+            builder.RegisterType<DocsStarter>().SingleInstance().As<IStartable>();
+
+            // Setup for WebAPI
+            builder.RegisterModule(
+                new WebApiServicesModule
+                {
+                    ConfiguringWebApi = ConfiguringWebApi
+                });
+
+            // Insert logging services
+            builder.RegisterModule(
+                new LoggingServicesModule
+                {
+                    ConfiguringLogging = ConfigureLogging
+                });
         }
 
         public void ConfiguringWebApi(HttpConfiguration config)

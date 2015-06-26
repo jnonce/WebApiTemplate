@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin.Hosting;
+﻿using Autofac;
+using Microsoft.Owin.Hosting;
 
 namespace webapitmpl.Configuration
 {
@@ -17,6 +18,6 @@ namespace webapitmpl.Configuration
         /// Configures the specified startup sequence.
         /// </summary>
         /// <param name="startup">The startup sequence.</param>
-        void Configure(App_Start.Startup startup);
+        void Configure(ContainerBuilder builder);
     }
 }

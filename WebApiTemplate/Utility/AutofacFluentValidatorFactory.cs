@@ -9,13 +9,13 @@ namespace webapitmpl.Utility
     /// </summary>
     public class AutofacFluentValidatorFactory : IValidatorFactory
     {
-        private IContainer container;
+        private ILifetimeScope container;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutofacFluentValidatorFactory"/> class.
         /// </summary>
         /// <param name="container">The container.</param>
-        public AutofacFluentValidatorFactory(IContainer container)
+        public AutofacFluentValidatorFactory(ILifetimeScope container)
         {
             this.container = container;
         }

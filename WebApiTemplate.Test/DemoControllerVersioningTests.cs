@@ -55,16 +55,7 @@ namespace WebApiTemplate.Test
             mock.Setup(c => c.UtcNow)
                 .Returns(new DateTimeOffset(2010, 1, 1, 12, 0, 0, TimeSpan.Zero));
 
-            using (var server = WebApiTemplateTestServer.CreateServer(
-                startup =>
-                {
-                    startup.ConfiguringLogging += WebApiTemplateTestServer.ConfigureStdLogging;
-                    startup.FinalizeContainer += builder =>
-                        {
-                            builder.Register(c => mock.Object);
-                        };
-                })
-                )
+            using (var server = WebApiTemplateTestServer.CreateServer())
             {
                 HttpResponseMessage response = await
                     server.CreateRequest("api/item?itemId=22&coolName=g")

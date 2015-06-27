@@ -5,6 +5,7 @@ using Microsoft.Owin.Testing;
 using Serilog;
 using Serilog.Events;
 using webapitmpl.App_Start;
+using webapitmpl.Configuration;
 using webapitmpl.Utility;
 
 namespace WebApiTemplate.Test
@@ -14,7 +15,7 @@ namespace WebApiTemplate.Test
     /// </summary>
     public static class WebApiTemplateTestServer
     {
-        public static TestServer CreateServer(Action<ContainerBuilder> onStart)
+        public static TestServer CreateServer(Func<ContainerBuilder, object[]> onStart)
         {
             return TestServer.Create(
                 app =>
@@ -40,25 +41,9 @@ namespace WebApiTemplate.Test
                         {
                             ConfiguringLogging = ConfigureStdLogging
                         });
-                });
-        }
 
-        public static TestServer CreateServer()
-        {
-            return CreateServer(builder =>
-                builder
-                .RegisterModule<ProviderServicesModule>()
-                .RegisterModule(
-                    new WebApiServicesModule
-                    {
-                        //ConfiguringWebApi = ConfiguringWebApi
-                    })
-                .RegisterModule(
-                    new LoggingServicesModule
-                    {
-                        ConfiguringLogging = ConfigureStdLogging
-                    })
-                );
+                    return ServiceConfiguration.CommonStartupSequence;
+                });
         }
 
         public static LoggerConfiguration ConfigureStdLogging(LoggerConfiguration config)

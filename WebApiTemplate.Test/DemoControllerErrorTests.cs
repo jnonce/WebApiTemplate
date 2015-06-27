@@ -41,13 +41,7 @@ namespace WebApiTemplate.Test
                     config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
                 };
 
-            using (var server = WebApiTemplateTestServer.CreateServer(
-                startup =>
-                {
-                    startup.ConfiguringLogging += WebApiTemplateTestServer.ConfigureStdLogging;
-                    startup.ConfiguringWebApi += onInit;
-                })
-                )
+            using (var server = WebApiTemplateTestServer.CreateServer())
             {
                 HttpResponseMessage response = await GetFailureResponse(server);
 

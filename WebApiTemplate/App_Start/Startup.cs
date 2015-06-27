@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Autofac;
 using Owin;
@@ -8,10 +9,26 @@ using webapitmpl.Utility;
 namespace webapitmpl.App_Start
 {
     /// <summary>
-    /// d
+    /// Startup for the system
     /// </summary>
     public partial class Startup
     {
+        /// <summary>
+        /// Common service starter id's
+        /// </summary>
+        public static class Starters
+        {
+            public static readonly object Docs = new object();
+
+            public static readonly object Logging = new object();
+
+            public static readonly object Owin = new object();
+
+            public static readonly object WebApi = new object();
+
+            public static readonly object Auth = new object();
+        }
+
         /// <summary>
         /// Configurations the application
         /// </summary>
@@ -26,14 +43,14 @@ namespace webapitmpl.App_Start
         /// </summary>
         /// <param name="app">The application.</param>
         /// <param name="builderMethod">The container builder</param>
-        public void Configuration(IAppBuilder app, Action<ContainerBuilder> builderMethod)
+        public void Configuration(IAppBuilder app, Func<ContainerBuilder, object[]> builderMethod)
         {
             // Begin registering a container
             ContainerBuilder builder = new ContainerBuilder();
             builder.RegisterInstance(app).ExternallyOwned();
 
             // The configuration system ultimately decides the services to be used
-            builderMethod(builder);
+            object[] startupOrder = builderMethod(builder);
 
             // Insert middleware which injects IOwinContexts
             builder.RegisterType<OwinStarter>()
@@ -46,7 +63,14 @@ namespace webapitmpl.App_Start
             app.RegisterAppDisposing(container);
 
             var starters = container.Resolve<IEnumerable<IAppConfiguration>>();
-            Configuration(app, starters);
+            Configuration(
+                app,
+                startupOrder.Join(
+                    starters,
+                    orderedId => orderedId,
+                    starter => starter.Id,
+                    (orderedId, starter) => starter)
+                );
         }
 
         // Configure the Owin pipeline using the given starters

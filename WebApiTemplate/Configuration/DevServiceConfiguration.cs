@@ -18,7 +18,7 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public void Configure(ContainerBuilder builder)
+        public object[] Configure(ContainerBuilder builder)
         {
             // Register primary services
             builder.RegisterModule<ProviderServicesModule>();
@@ -39,6 +39,12 @@ namespace webapitmpl.Configuration
                 {
                     ConfiguringLogging = ConfigureLogging
                 });
+
+            // Support CORS
+            builder.RegisterType<AuthStarter>()
+                .As<IAppConfiguration>();
+
+            return ServiceConfiguration.CommonStartupSequence;
         }
 
         public void ConfiguringWebApi(HttpConfiguration config)

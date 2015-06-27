@@ -21,6 +21,11 @@ namespace webapitmpl.App_Start
             this.config = config;
         }
 
+        public object Id
+        {
+            get { return Startup.Starters.Docs; }
+        }
+
         public void Configuration(IAppBuilder appBuilder)
         {
             config

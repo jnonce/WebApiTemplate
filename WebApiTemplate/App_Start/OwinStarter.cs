@@ -13,6 +13,11 @@ namespace webapitmpl.App_Start
             this.scope = scope;
         }
 
+        public object Id
+        {
+            get { return Startup.Starters.Owin; }
+        }
+
         public void Configuration(IAppBuilder app)
         {
             // Setup a dependency scope per request, at the OWIN layer

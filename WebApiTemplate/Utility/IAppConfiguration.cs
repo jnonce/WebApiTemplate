@@ -9,6 +9,14 @@ namespace webapitmpl.Utility
     public interface IAppConfiguration
     {
         /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        object Id { get; }
+
+        /// <summary>
         /// Configures the Owin pipeline
         /// </summary>
         /// <param name="appBuilder">The application builder.</param>
@@ -25,10 +33,23 @@ namespace webapitmpl.Utility
         /// <summary>
         /// Initializes a new instance of the <see cref="AppConfiguration"/> class.
         /// </summary>
+        /// <param name="id">Id for the configuration object</param>
         /// <param name="configurer">The configurer.</param>
-        public AppConfiguration(Action<IAppBuilder> configurer)
+        public AppConfiguration(object id, Action<IAppBuilder> configurer)
         {
+            this.Id = id;
             this.configurer = configurer;
+        }
+
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        public object Id
+        {
+            get; private set;
         }
 
         /// <summary>

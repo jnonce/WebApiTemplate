@@ -1,25 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Cors;
-using Autofac;
-using Microsoft.Owin.Cors;
+﻿using Microsoft.Owin.Cors;
 using Owin;
-using webapitmpl.Configuration;
+using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    public partial class Startup
+    /// <summary>
+    /// Starter for authentication
+    /// </summary>
+    public class AuthStarter : IAppConfiguration
     {
-        public void ConfigureAuth(IAppBuilder app, IContainer container)
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
+        public object Id
         {
-            // Register authN here
-            // e.g. from Microsoft.Owin.Security.*
+            get { return Startup.Starters.Auth; }
+        }
 
-            //
+        /// <summary>
+        /// Configurations the specified application.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        public void Configuration(IAppBuilder app)
+        {
             app.UseCors(CorsOptions.AllowAll);
-            // http://senodio.com/site/swagger/#!/pet/addPet
         }
     }
 }

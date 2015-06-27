@@ -17,6 +17,11 @@ namespace webapitmpl.App_Start
             this.logger = logger;
         }
 
+        public object Id
+        {
+            get { return Startup.Starters.Logging; }
+        }
+
         public void Configuration(IAppBuilder app)
         {
             // Register Owin logging

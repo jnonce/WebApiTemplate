@@ -30,12 +30,7 @@ namespace WebApiTemplate.Test
         [TestMethod]
         public async Task CreateWidget()
         {
-            using (var server = WebApiTemplateTestServer.CreateServer(
-                startup =>
-                {
-                    startup.ConfiguringLogging += ConfigureLogging;
-                })
-                )
+            using (var server = WebApiTemplateTestServer.CreateServer())
             {
                 Widget postingWidget = new Widget { };
                 HttpResponseMessage response = await server.CreateRequest("api/widget")

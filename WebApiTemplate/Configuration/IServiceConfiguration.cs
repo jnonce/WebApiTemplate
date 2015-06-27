@@ -17,7 +17,11 @@ namespace webapitmpl.Configuration
         /// <summary>
         /// Configures the specified startup sequence.
         /// </summary>
-        /// <param name="startup">The startup sequence.</param>
-        void Configure(ContainerBuilder builder);
+        /// <param name="builder">Configure the services in the container.</param>
+        /// <returns>
+        /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration"/> to run from
+        /// the container
+        /// </returns>
+        object[] Configure(ContainerBuilder builder);
     }
 }

@@ -18,6 +18,11 @@ namespace webapitmpl.App_Start
             this.container = madeContainer;
         }
 
+        public object Id
+        {
+            get { return Startup.Starters.WebApi; }
+        }
+
         public void Configuration(IAppBuilder app)
         {
             // Validation

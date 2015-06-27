@@ -24,12 +24,40 @@ namespace webapitmpl.Configuration
             return new DevServiceConfiguration();
         }
 
-        public static void OnStartup(ContainerBuilder builder)
+        public static object[] CommonStartupSequence
         {
-            new DevServiceConfiguration().Configure(builder);
+            get
+            {
+                return new[]
+                {
+                    Startup.Starters.Owin,
+                    Startup.Starters.Logging,
+                    Startup.Starters.Auth,
+                    Startup.Starters.WebApi,
+                    Startup.Starters.Docs,
+                };
+            }
         }
 
-        public void Configure(ContainerBuilder builder)
+        /// <summary>
+        /// Called to startup the application using the active configuration
+        /// </summary>
+        /// <param name="builder">The builder.</param>
+        /// <returns></returns>
+        public static object[] OnStartup(ContainerBuilder builder)
+        {
+            return new DevServiceConfiguration().Configure(builder);
+        }
+
+        /// <summary>
+        /// Configures the specified startup sequence.
+        /// </summary>
+        /// <param name="builder">Configure the services in the container.</param>
+        /// <returns>
+        /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
+        /// the container
+        /// </returns>
+        public object[] Configure(ContainerBuilder builder)
         {
             builder.RegisterModule<ProviderServicesModule>();
             builder.RegisterModule(
@@ -42,8 +70,14 @@ namespace webapitmpl.Configuration
                 {
                     ConfiguringLogging = ConfigureLogging
                 });
+
+            // Support CORS
+            builder.RegisterType<AuthStarter>()
+                .As<IAppConfiguration>();
+
+            return CommonStartupSequence;
         }
-        
+
         public void Configure(StartOptions startOptions)
         {
             // Scheme: https

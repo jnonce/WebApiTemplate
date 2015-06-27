@@ -147,6 +147,7 @@
     <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />
     <Compile Include="Utility\CorrelationIdOwinContextExtensions.cs" />
+    <Compile Include="Utility\IAppConfiguration.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
     <Compile Include="Configuration\ServiceConfiguration.cs" />

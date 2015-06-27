@@ -1,20 +1,19 @@
 ﻿using Autofac;
 using Owin;
+using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    class OwinStarter : IStartable
+    internal class OwinStarter : IAppConfiguration
     {
-        private IAppBuilder app;
         private ILifetimeScope scope;
         
-        public OwinStarter(IAppBuilder app, ILifetimeScope scope)
+        public OwinStarter(ILifetimeScope scope)
         {
-            this.app = app;
             this.scope = scope;
         }
 
-        public void Start()
+        public void Configuration(IAppBuilder app)
         {
             // Setup a dependency scope per request, at the OWIN layer
             // Make IOwinContext available for use in a request

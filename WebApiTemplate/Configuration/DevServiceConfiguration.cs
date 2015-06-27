@@ -24,7 +24,7 @@ namespace webapitmpl.Configuration
             builder.RegisterModule<ProviderServicesModule>();
 
             // Allow documentation to be generated
-            builder.RegisterType<DocsStarter>().SingleInstance().As<IStartable>();
+            builder.RegisterType<DocsStarter>().SingleInstance().As<IAppConfiguration>();
 
             // Setup for WebAPI
             builder.RegisterModule(

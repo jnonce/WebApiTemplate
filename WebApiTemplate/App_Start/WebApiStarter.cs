@@ -7,20 +7,18 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    class WebApiStarter : IStartable
+    class WebApiStarter : IAppConfiguration
     {
         private ILifetimeScope container;
         private HttpConfiguration config;
-        private IAppBuilder app;
 
-        public WebApiStarter(HttpConfiguration config, IAppBuilder app, ILifetimeScope madeContainer)
+        public WebApiStarter(HttpConfiguration config, ILifetimeScope madeContainer)
         {
-            this.app = app;
             this.config = config;
             this.container = madeContainer;
         }
 
-        public void Start()
+        public void Configuration(IAppBuilder app)
         {
             // Validation
             config.UseAutofacFluentValidation(container);

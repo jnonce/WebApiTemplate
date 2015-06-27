@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Web.Http;
-using Autofac;
 using jnonce.WebApi.VersionedRouting;
+using Owin;
 using Swashbuckle.Application;
 using Swashbuckle.Swagger;
 using webapitmpl.Utility;
@@ -12,7 +12,7 @@ namespace webapitmpl.App_Start
     /// <summary>
     /// Augment the HttpConfiguration with routes for Swagger docs
     /// </summary>
-    internal class DocsStarter : IStartable
+    internal class DocsStarter : IAppConfiguration
     {
         private HttpConfiguration config;
 
@@ -21,12 +21,13 @@ namespace webapitmpl.App_Start
             this.config = config;
         }
 
-        public void Start()
+        public void Configuration(IAppBuilder appBuilder)
         {
             config
                 .EnableSwagger(ConfigureSwagger)
                 .EnableSwaggerUi(ConfigureSwaggerUI);
         }
+
 
         // Configure the Swagger UI presentation
         private static void ConfigureSwaggerUI(SwaggerUiConfig swaggerUi)
@@ -95,5 +96,6 @@ namespace webapitmpl.App_Start
             return (constraint == null)
                 || constraint.Match(targetApiVersion);
         }
+
     }
 }

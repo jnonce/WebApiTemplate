@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Http.Tracing;
+using Autofac;
 using Microsoft.Owin.Testing;
 using Serilog;
 using Serilog.Events;
@@ -13,24 +14,51 @@ namespace WebApiTemplate.Test
     /// </summary>
     public static class WebApiTemplateTestServer
     {
-        public static TestServer CreateServer(Action<Startup> onStart)
+        public static TestServer CreateServer(Action<ContainerBuilder> onStart)
         {
             return TestServer.Create(
                 app =>
                 {
                     var startup = new webapitmpl.App_Start.Startup();
-                    onStart(startup);
-                    startup.ConfigurationPostCfg(app);
+                    startup.Configuration(app, onStart);
                 });
         }
 
         public static TestServer CreateServer()
         {
             return CreateServer(
-                startup =>
+                builder =>
                 {
-                    startup.ConfiguringLogging += ConfigureStdLogging;
+                    builder.RegisterModule<ProviderServicesModule>();
+                    builder.RegisterModule(
+                        new WebApiServicesModule
+                        {
+                            //ConfiguringWebApi = ConfiguringWebApi
+                        });
+                    builder.RegisterModule(
+                        new LoggingServicesModule
+                        {
+                            ConfiguringLogging = ConfigureStdLogging
+                        });
                 });
+        }
+
+        public static TestServer CreateServer()
+        {
+            return CreateServer(builder =>
+                builder
+                .RegisterModule<ProviderServicesModule>()
+                .RegisterModule(
+                    new WebApiServicesModule
+                    {
+                        //ConfiguringWebApi = ConfiguringWebApi
+                    })
+                .RegisterModule(
+                    new LoggingServicesModule
+                    {
+                        ConfiguringLogging = ConfigureStdLogging
+                    })
+                );
         }
 
         public static LoggerConfiguration ConfigureStdLogging(LoggerConfiguration config)

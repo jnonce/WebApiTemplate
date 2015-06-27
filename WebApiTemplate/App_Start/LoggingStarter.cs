@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using Autofac;
 using Microsoft.Owin.Logging;
 using Owin;
 using SerilogWeb.Owin;
@@ -9,20 +8,16 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    class LoggingStarter : IStartable, IDisposable
+    internal class LoggingStarter : IAppConfiguration, IDisposable
     {
         private Serilog.ILogger logger;
-        private IAppBuilder app;
 
-        public LoggingStarter(
-            IAppBuilder app,
-            Serilog.ILogger logger)
+        public LoggingStarter(Serilog.ILogger logger)
         {
-            this.app = app;
             this.logger = logger;
         }
 
-        public void Start()
+        public void Configuration(IAppBuilder app)
         {
             // Register Owin logging
             app.UseSerilogRequestContext();
@@ -54,6 +49,5 @@ namespace webapitmpl.App_Start
 
             return givenId;
         }
-
     }
 }

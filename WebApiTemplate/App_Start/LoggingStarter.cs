@@ -10,16 +10,21 @@ namespace webapitmpl.App_Start
 {
     internal class LoggingStarter : IAppConfiguration, IDisposable
     {
+        /// <summary>
+        /// The identifier
+        /// </summary>
+        public static readonly object Id = new object();
+
         private Serilog.ILogger logger;
 
         public LoggingStarter(Serilog.ILogger logger)
         {
-            this.logger = logger;
+            this.logger = logger.ForContext<Startup>();
         }
 
-        public object Id
+        object IAppConfiguration.Id
         {
-            get { return Startup.Starters.Logging; }
+            get { return Id; }
         }
 
         public void Configuration(IAppBuilder app)
@@ -34,12 +39,12 @@ namespace webapitmpl.App_Start
             app.LogCorrelationId("RequestCorrelation");
 
             // Initial log
-            logger.ForContext<Startup>().Information("Server Started");
+            logger.Information("Server Started");
         }
 
         public void Dispose()
         {
-            logger.ForContext<Startup>().Information("Server Stopped");
+            logger.Information("Server Stopped");
         }
 
         private static string NormalizeCorrelationId(string givenId)

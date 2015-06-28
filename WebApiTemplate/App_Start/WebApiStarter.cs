@@ -7,8 +7,16 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    class WebApiStarter : IAppConfiguration
+    /// <summary>
+    /// Starter which inserts WebApi into the Owin pipeline
+    /// </summary>
+    internal class WebApiStarter : IAppConfiguration
     {
+        /// <summary>
+        /// The identifier
+        /// </summary>
+        public static readonly object Id = new object();
+
         private ILifetimeScope container;
         private HttpConfiguration config;
 
@@ -18,9 +26,9 @@ namespace webapitmpl.App_Start
             this.container = madeContainer;
         }
 
-        public object Id
+        object IAppConfiguration.Id
         {
-            get { return Startup.Starters.WebApi; }
+            get { return Id; }
         }
 
         public void Configuration(IAppBuilder app)

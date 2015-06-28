@@ -53,7 +53,7 @@ namespace webapitmpl.App_Start
             config.MapHttpAttributeRoutes(new ConstrainingDirectRouteProvider());
 
             // Register a starter to insert webapi into the pipeline
-            builder.RegisterType<WebApiStarter>().SingleInstance().As<IAppConfiguration>();
+            builder.RegisterType<WebApiStarter>().As<IAppConfiguration>();
         }
     }
 }

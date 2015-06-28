@@ -2,7 +2,13 @@
 
 namespace webapitmpl.App_Start
 {
-    class ProviderServicesModule : Module
+    /// <summary>
+    /// Basic services used by controllers.
+    /// </summary>
+    /// <remarks>
+    /// This is an example module.  You can extend this or replace it.
+    /// </remarks>
+    internal class ProviderServicesModule : Module
     {
         protected override void Load(ContainerBuilder builder)
         {

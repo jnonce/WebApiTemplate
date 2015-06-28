@@ -159,7 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\AuthStarter.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

@@ -10,14 +10,13 @@ namespace webapitmpl.App_Start
     public class AuthStarter : IAppConfiguration
     {
         /// <summary>
-        /// Gets the identifier.
+        /// The identifier
         /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public object Id
+        public static readonly object Id = new object();
+
+        object IAppConfiguration.Id
         {
-            get { return Startup.Starters.Auth; }
+            get { return Id; }
         }
 
         /// <summary>

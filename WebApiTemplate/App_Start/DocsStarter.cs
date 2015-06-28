@@ -14,6 +14,11 @@ namespace webapitmpl.App_Start
     /// </summary>
     internal class DocsStarter : IAppConfiguration
     {
+        /// <summary>
+        /// The identifier
+        /// </summary>
+        public static readonly object Id = new object();
+
         private HttpConfiguration config;
 
         public DocsStarter(HttpConfiguration config)
@@ -21,9 +26,9 @@ namespace webapitmpl.App_Start
             this.config = config;
         }
 
-        public object Id
+        object IAppConfiguration.Id
         {
-            get { return Startup.Starters.Docs; }
+            get { return Id; }
         }
 
         public void Configuration(IAppBuilder appBuilder)
@@ -101,6 +106,5 @@ namespace webapitmpl.App_Start
             return (constraint == null)
                 || constraint.Match(targetApiVersion);
         }
-
     }
 }

@@ -25,25 +25,41 @@ namespace WebApiTemplate.Test
                 });
         }
 
+        public static TestServer CreateServer(Action<ContainerBuilder> onStart)
+        {
+            return TestServer.Create(
+                app =>
+                {
+                    var startup = new webapitmpl.App_Start.Startup();
+                    startup.Configuration(
+                        app,
+                        builder =>
+                        {
+                            onStart(builder);
+                            return ServiceConfiguration.CommonStartupSequence;
+                        });
+                });
+        }
+
         public static TestServer CreateServer()
         {
             return CreateServer(
-                builder =>
-                {
-                    builder.RegisterModule<ProviderServicesModule>();
-                    builder.RegisterModule(
+                builder => builder
+                    .RegisterModule<ProviderServicesModule>()
+                    .RegisterModule(
                         new WebApiServicesModule
                         {
-                            //ConfiguringWebApi = ConfiguringWebApi
-                        });
-                    builder.RegisterModule(
+                            ConfiguringWebApi = cfg =>
+                            {
+                                cfg.IncludeErrorDetailPolicy = System.Web.Http.IncludeErrorDetailPolicy.Always;
+                            }
+                        })
+                    .RegisterModule(
                         new LoggingServicesModule
                         {
                             ConfiguringLogging = ConfigureStdLogging
-                        });
-
-                    return ServiceConfiguration.CommonStartupSequence;
-                });
+                        })
+                );
         }
 
         public static LoggerConfiguration ConfigureStdLogging(LoggerConfiguration config)

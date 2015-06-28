@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using Owin;
 using webapitmpl.Configuration;
@@ -13,22 +13,6 @@ namespace webapitmpl.App_Start
     /// </summary>
     public partial class Startup
     {
-        /// <summary>
-        /// Common service starter id's
-        /// </summary>
-        public static class Starters
-        {
-            public static readonly object Docs = new object();
-
-            public static readonly object Logging = new object();
-
-            public static readonly object Owin = new object();
-
-            public static readonly object WebApi = new object();
-
-            public static readonly object Auth = new object();
-        }
-
         /// <summary>
         /// Configurations the application
         /// </summary>
@@ -54,7 +38,6 @@ namespace webapitmpl.App_Start
 
             // Insert middleware which injects IOwinContexts
             builder.RegisterType<OwinStarter>()
-                .SingleInstance()
                 .As<IAppConfiguration>();
 
             // Build the container.  Build will also start any IStartable services
@@ -62,15 +45,16 @@ namespace webapitmpl.App_Start
             IContainer container = builder.Build();
             app.RegisterAppDisposing(container);
 
+            // Determine the starters to run
             var starters = container.Resolve<IEnumerable<IAppConfiguration>>();
-            Configuration(
-                app,
-                startupOrder.Join(
-                    starters,
-                    orderedId => orderedId,
-                    starter => starter.Id,
-                    (orderedId, starter) => starter)
-                );
+            var filteredStarters = startupOrder.Join(
+                starters,
+                orderedId => orderedId,
+                starter => starter.Id,
+                (orderedId, starter) => starter);
+
+            // Run the starters on the Owin pipeline
+            Configuration(app, filteredStarters);
         }
 
         // Configure the Owin pipeline using the given starters

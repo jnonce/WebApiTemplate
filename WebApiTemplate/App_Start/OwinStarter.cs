@@ -6,6 +6,11 @@ namespace webapitmpl.App_Start
 {
     internal class OwinStarter : IAppConfiguration
     {
+        /// <summary>
+        /// The identifier
+        /// </summary>
+        public static readonly object Id = new object();
+
         private ILifetimeScope scope;
         
         public OwinStarter(ILifetimeScope scope)
@@ -13,9 +18,9 @@ namespace webapitmpl.App_Start
             this.scope = scope;
         }
 
-        public object Id
+        object IAppConfiguration.Id
         {
-            get { return Startup.Starters.Owin; }
+            get { return Id; }
         }
 
         public void Configuration(IAppBuilder app)

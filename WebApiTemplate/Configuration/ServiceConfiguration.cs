@@ -24,17 +24,23 @@ namespace webapitmpl.Configuration
             return new DevServiceConfiguration();
         }
 
+        /// <summary>
+        /// Gets the common startup sequence.
+        /// </summary>
+        /// <value>
+        /// The common startup sequence.
+        /// </value>
         public static object[] CommonStartupSequence
         {
             get
             {
                 return new[]
                 {
-                    Startup.Starters.Owin,
-                    Startup.Starters.Logging,
-                    Startup.Starters.Auth,
-                    Startup.Starters.WebApi,
-                    Startup.Starters.Docs,
+                    OwinStarter.Id,
+                    LoggingStarter.Id,
+                    AuthStarter.Id,
+                    WebApiStarter.Id,
+                    DocsStarter.Id
                 };
             }
         }
@@ -78,6 +84,10 @@ namespace webapitmpl.Configuration
             return CommonStartupSequence;
         }
 
+        /// <summary>
+        /// Configures the specified start options.
+        /// </summary>
+        /// <param name="startOptions">The start options.</param>
         public void Configure(StartOptions startOptions)
         {
             // Scheme: https
@@ -87,12 +97,21 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("https://+:443");
         }
 
+        /// <summary>
+        /// Configurings web API.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
         public void ConfiguringWebApi(System.Web.Http.HttpConfiguration config)
         {
             // Do not expose errors to callers
             config.IncludeErrorDetailPolicy = System.Web.Http.IncludeErrorDetailPolicy.Never;
         }
 
+        /// <summary>
+        /// Configures the logging.
+        /// </summary>
+        /// <param name="logging">The logging.</param>
+        /// <returns></returns>
         public Serilog.LoggerConfiguration ConfigureLogging(Serilog.LoggerConfiguration logging)
         {
             // Ignore anything short of a warning from WebApi

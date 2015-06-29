@@ -143,7 +143,6 @@
     <Compile Include="Utility\AddedParametersSwaggerOperationFilter.cs" />
     <Compile Include="Utility\AppBuilderDisposeExtensions.cs" />
     <Compile Include="Utility\AutofacFluentValidationExtensions.cs" />
-    <Compile Include="Utility\AutofacResolutionExtensions.cs" />
     <Compile Include="Utility\AutofacSerilogBridgeModule.cs" />
     <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />

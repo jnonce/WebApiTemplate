@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
 using jnonce.WebApi.VersionedRouting;
@@ -12,8 +11,6 @@ namespace webapitmpl.App_Start
     /// </summary>
     class WebApiServicesModule : Module
     {
-        public Action<HttpConfiguration> ConfiguringWebApi;
-
         protected override void Load(ContainerBuilder builder)
         {
             var config = new HttpConfiguration();
@@ -39,21 +36,9 @@ namespace webapitmpl.App_Start
             builder.RegisterInstance<IApiVersionProvider>(
                 new AcceptHeaderApiVersionProvider("vnd-api"));
 
-            // Allow config to modify WebApi
-            if (ConfiguringWebApi != null)
-            {
-                ConfiguringWebApi(config);
-            }
-
-            // Enforce specific Json formatting
-            config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
-            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
-
-            // Routing: Use attribute based direct routes with Api constraints
-            config.MapHttpAttributeRoutes(new ConstrainingDirectRouteProvider());
-
             // Register a starter to insert webapi into the pipeline
-            builder.RegisterType<WebApiStarter>().As<IAppConfiguration>();
+            builder.RegisterType<WebApiStartup>()
+                .Keyed<IStartup>(WebApiStartup.Id);
         }
     }
 }

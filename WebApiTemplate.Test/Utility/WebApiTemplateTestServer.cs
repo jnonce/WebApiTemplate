@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Testing;
@@ -15,7 +16,7 @@ namespace WebApiTemplate.Test
     /// </summary>
     public static class WebApiTemplateTestServer
     {
-        public static TestServer CreateServer(Func<ContainerBuilder, object[]> onStart)
+        public static TestServer CreateServer(Func<ContainerBuilder, Func<ContainerBuilder, IContainer>, IEnumerable<IStartup>> onStart)
         {
             return TestServer.Create(
                 app =>

@@ -12,7 +12,7 @@ namespace webapitmpl.App_Start
     /// <summary>
     /// Augment the HttpConfiguration with routes for Swagger docs
     /// </summary>
-    internal class DocsStarter : IAppConfiguration
+    internal class DocsStartup : IStartup
     {
         /// <summary>
         /// The identifier
@@ -21,14 +21,9 @@ namespace webapitmpl.App_Start
 
         private HttpConfiguration config;
 
-        public DocsStarter(HttpConfiguration config)
+        public DocsStartup(HttpConfiguration config)
         {
             this.config = config;
-        }
-
-        object IAppConfiguration.Id
-        {
-            get { return Id; }
         }
 
         public void Configuration(IAppBuilder appBuilder)

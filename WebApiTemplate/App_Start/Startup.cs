@@ -37,8 +37,10 @@ namespace webapitmpl.App_Start
             object[] startupOrder = builderMethod(builder);
 
             // Insert middleware which injects IOwinContexts
-            builder.RegisterType<OwinStarter>()
-                .As<IAppConfiguration>();
+            builder.RegisterType<OwinStartup>()
+                .Keyed<IStartup>(OwinStartup.Id);
+
+            object[] starterIds = builderMethod(builder);
 
             // Build the container.  Build will also start any IStartable services
             // and allow them to inject themselves into the owin pipeline
@@ -46,21 +48,17 @@ namespace webapitmpl.App_Start
             app.RegisterAppDisposing(container);
 
             // Determine the starters to run
-            var starters = container.Resolve<IEnumerable<IAppConfiguration>>();
-            var filteredStarters = startupOrder.Join(
-                starters,
-                orderedId => orderedId,
-                starter => starter.Id,
-                (orderedId, starter) => starter);
+            IEnumerable<IStartup> starters = starterIds
+                .Select(starterId => container.ResolveKeyed<IStartup>(starterId));
 
             // Run the starters on the Owin pipeline
-            Configuration(app, filteredStarters);
+            Configuration(app, starters);
         }
 
         // Configure the Owin pipeline using the given starters
-        private static void Configuration(IAppBuilder app, IEnumerable<IAppConfiguration> starters)
+        private static void Configuration(IAppBuilder app, IEnumerable<IStartup> starters)
         {
-            foreach (IAppConfiguration starter in starters)
+            foreach (IStartup starter in starters)
             {
                 starter.Configuration(app);
             }

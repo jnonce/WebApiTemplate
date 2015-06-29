@@ -4,7 +4,7 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    internal class OwinStarter : IAppConfiguration
+    internal class OwinStartup : IStartup
     {
         /// <summary>
         /// The identifier
@@ -13,14 +13,9 @@ namespace webapitmpl.App_Start
 
         private ILifetimeScope scope;
         
-        public OwinStarter(ILifetimeScope scope)
+        public OwinStartup(ILifetimeScope scope)
         {
             this.scope = scope;
-        }
-
-        object IAppConfiguration.Id
-        {
-            get { return Id; }
         }
 
         public void Configuration(IAppBuilder app)

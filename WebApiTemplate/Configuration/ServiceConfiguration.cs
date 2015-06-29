@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using Autofac;
 using Microsoft.Owin.Hosting;
+using Owin;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.RollingFile;
 using webapitmpl.App_Start;
@@ -25,27 +28,6 @@ namespace webapitmpl.Configuration
         }
 
         /// <summary>
-        /// Gets the common startup sequence.
-        /// </summary>
-        /// <value>
-        /// The common startup sequence.
-        /// </value>
-        public static object[] CommonStartupSequence
-        {
-            get
-            {
-                return new[]
-                {
-                    OwinStarter.Id,
-                    LoggingStarter.Id,
-                    AuthStarter.Id,
-                    WebApiStarter.Id,
-                    DocsStarter.Id
-                };
-            }
-        }
-
-        /// <summary>
         /// Called to startup the application using the active configuration
         /// </summary>
         /// <param name="builder">The builder.</param>
@@ -66,11 +48,7 @@ namespace webapitmpl.Configuration
         public object[] Configure(ContainerBuilder builder)
         {
             builder.RegisterModule<ProviderServicesModule>();
-            builder.RegisterModule(
-                new WebApiServicesModule
-                {
-                    ConfiguringWebApi = ConfiguringWebApi
-                });
+            builder.RegisterModule<WebApiServicesModule>();
             builder.RegisterModule(
                 new LoggingServicesModule
                 {
@@ -78,10 +56,16 @@ namespace webapitmpl.Configuration
                 });
 
             // Support CORS
-            builder.RegisterType<AuthStarter>()
-                .As<IAppConfiguration>();
+            builder.RegisterType<AuthStartup>()
+                .Keyed<IStartup>(AuthStartup.Id);
 
-            return CommonStartupSequence;
+            return new [] {
+                OwinStartup.Id,
+                LoggingStartup.Id,
+                AuthStartup.Id,
+                WebApiStartup.Id,
+                DocsStartup.Id
+            };
         }
 
         /// <summary>

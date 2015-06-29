@@ -7,17 +7,12 @@ namespace webapitmpl.App_Start
     /// <summary>
     /// Starter for authentication
     /// </summary>
-    public class AuthStarter : IAppConfiguration
+    public class AuthStartup : IStartup
     {
         /// <summary>
         /// The identifier
         /// </summary>
         public static readonly object Id = new object();
-
-        object IAppConfiguration.Id
-        {
-            get { return Id; }
-        }
 
         /// <summary>
         /// Configurations the specified application.

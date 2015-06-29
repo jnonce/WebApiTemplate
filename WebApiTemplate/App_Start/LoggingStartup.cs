@@ -8,7 +8,7 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    internal class LoggingStarter : IAppConfiguration, IDisposable
+    internal class LoggingStartup : IStartup, IDisposable
     {
         /// <summary>
         /// The identifier
@@ -17,14 +17,9 @@ namespace webapitmpl.App_Start
 
         private Serilog.ILogger logger;
 
-        public LoggingStarter(Serilog.ILogger logger)
+        public LoggingStartup(Serilog.ILogger logger)
         {
             this.logger = logger.ForContext<Startup>();
-        }
-
-        object IAppConfiguration.Id
-        {
-            get { return Id; }
         }
 
         public void Configuration(IAppBuilder app)

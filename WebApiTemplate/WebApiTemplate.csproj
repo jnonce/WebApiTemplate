@@ -129,12 +129,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\LoggingServicesModule.cs" />
-    <Compile Include="App_Start\LoggingStarter.cs" />
-    <Compile Include="App_Start\OwinStarter.cs" />
-    <Compile Include="App_Start\DocsStarter.cs" />
+    <Compile Include="App_Start\LoggingStartup.cs" />
+    <Compile Include="App_Start\OwinStartup.cs" />
+    <Compile Include="App_Start\DocsStartup.cs" />
     <Compile Include="App_Start\ProviderServicesModule.cs" />
     <Compile Include="App_Start\WebApiServicesModule.cs" />
-    <Compile Include="App_Start\WebApiStarter.cs" />
+    <Compile Include="App_Start\WebApiStartup.cs" />
     <Compile Include="Configuration\DevServiceConfiguration.cs" />
     <Compile Include="Configuration\IServiceConfiguration.cs" />
     <Compile Include="Models\Widget.cs" />
@@ -143,11 +143,12 @@
     <Compile Include="Utility\AddedParametersSwaggerOperationFilter.cs" />
     <Compile Include="Utility\AppBuilderDisposeExtensions.cs" />
     <Compile Include="Utility\AutofacFluentValidationExtensions.cs" />
+    <Compile Include="Utility\AutofacResolutionExtensions.cs" />
     <Compile Include="Utility\AutofacSerilogBridgeModule.cs" />
     <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />
     <Compile Include="Utility\CorrelationIdOwinContextExtensions.cs" />
-    <Compile Include="Utility\IAppConfiguration.cs" />
+    <Compile Include="Utility\IStartup.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
     <Compile Include="Configuration\ServiceConfiguration.cs" />
@@ -159,7 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Compile Include="App_Start\AuthStarter.cs" />
+    <Compile Include="App_Start\AuthStartup.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

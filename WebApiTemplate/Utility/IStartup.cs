@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Owin;
 
 namespace webapitmpl.Utility
@@ -6,16 +7,8 @@ namespace webapitmpl.Utility
     /// <summary>
     /// Startup class
     /// </summary>
-    public interface IAppConfiguration
+    public interface IStartup
     {
-        /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        object Id { get; }
-
         /// <summary>
         /// Configures the Owin pipeline
         /// </summary>
@@ -26,30 +19,17 @@ namespace webapitmpl.Utility
     /// <summary>
     /// Basic configuration classes which invokes a delegate
     /// </summary>
-    public class AppConfiguration : IAppConfiguration
+    public class DelegateStartup : IStartup
     {
         private Action<IAppBuilder> configurer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppConfiguration"/> class.
+        /// Initializes a new instance of the <see cref="DelegateStartup"/> class.
         /// </summary>
-        /// <param name="id">Id for the configuration object</param>
         /// <param name="configurer">The configurer.</param>
-        public AppConfiguration(object id, Action<IAppBuilder> configurer)
+        public DelegateStartup(Action<IAppBuilder> configurer)
         {
-            this.Id = id;
             this.configurer = configurer;
-        }
-
-        /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
-        public object Id
-        {
-            get; private set;
         }
 
         /// <summary>

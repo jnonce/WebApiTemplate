@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using Serilog;
 using webapitmpl.App_Start;
@@ -24,13 +25,12 @@ namespace webapitmpl.Configuration
             builder.RegisterModule<ProviderServicesModule>();
 
             // Allow documentation to be generated
-            builder.RegisterType<DocsStarter>().SingleInstance().As<IAppConfiguration>();
+            builder.RegisterType<DocsStartup>().SingleInstance().As<IStartup>();
 
             // Setup for WebAPI
             builder.RegisterModule(
                 new WebApiServicesModule
                 {
-                    ConfiguringWebApi = ConfiguringWebApi
                 });
 
             // Insert logging services
@@ -41,15 +41,20 @@ namespace webapitmpl.Configuration
                 });
 
             // Support CORS
-            builder.RegisterType<AuthStarter>()
-                .As<IAppConfiguration>();
+            builder.RegisterType<AuthStartup>()
+                .Keyed<IStartup>(AuthStartup.Id);
 
-            return ServiceConfiguration.CommonStartupSequence;
-        }
+            // Support Swagger
+            builder.RegisterType<DocsStartup>()
+                .Keyed<IStartup>(DocsStartup.Id);
 
-        public void ConfiguringWebApi(HttpConfiguration config)
-        {
-            config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
+            return new[] {
+                OwinStartup.Id,
+                LoggingStartup.Id,
+                AuthStartup.Id,
+                WebApiStartup.Id,
+                DocsStartup.Id
+            };
         }
 
         public Serilog.LoggerConfiguration ConfigureLogging(Serilog.LoggerConfiguration logging)

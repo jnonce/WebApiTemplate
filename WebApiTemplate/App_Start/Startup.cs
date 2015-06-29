@@ -29,7 +29,7 @@ namespace webapitmpl.App_Start
         /// <param name="builderMethod">The container builder</param>
         public void Configuration(
             IAppBuilder app,
-            Func<ContainerBuilder, Func<IContainer>, IEnumerable<IStartup>> builderMethod)
+            Action<ContainerBuilder, Func<IContainer>> builderMethod)
         {
             // Begin registering a container
             ContainerBuilder builder = new ContainerBuilder();
@@ -40,7 +40,7 @@ namespace webapitmpl.App_Start
                 .Keyed<IStartup>(OwinStartup.Id);
 
             // The configuration system ultimately decides the services to be used
-            IEnumerable<IStartup> starters = builderMethod(
+            builderMethod(
                 builder,
                 () =>
                 {
@@ -48,18 +48,6 @@ namespace webapitmpl.App_Start
                     app.RegisterAppDisposing(container);
                     return container;
                 });
-
-            // Run the starters on the Owin pipeline
-            Configuration(app, starters);
-        }
-
-        // Configure the Owin pipeline using the given starters
-        private static void Configuration(IAppBuilder app, IEnumerable<IStartup> starters)
-        {
-            foreach (IStartup starter in starters)
-            {
-                starter.Configuration(app);
-            }
         }
     }
 }

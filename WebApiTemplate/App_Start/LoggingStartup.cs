@@ -16,13 +16,15 @@ namespace webapitmpl.App_Start
         public static readonly object Id = new object();
 
         private Serilog.ILogger logger;
+        private IAppBuilder app;
 
-        public LoggingStartup(Serilog.ILogger logger)
+        public LoggingStartup(IAppBuilder app, Serilog.ILogger logger)
         {
+            this.app = app;
             this.logger = logger.ForContext<Startup>();
         }
 
-        public void Configuration(IAppBuilder app)
+        public void Configuration()
         {
             // Register Owin logging
             app.UseSerilogRequestContext();

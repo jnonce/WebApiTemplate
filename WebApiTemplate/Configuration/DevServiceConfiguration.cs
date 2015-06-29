@@ -19,7 +19,7 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public IEnumerable<IStartup> Configure(ContainerBuilder builder, Func<IContainer> getContainer)
+        public void Configure(ContainerBuilder builder, Func<IContainer> getContainer)
         {
             // Register primary services
             builder.RegisterModule<ProviderServicesModule>();
@@ -48,12 +48,12 @@ namespace webapitmpl.Configuration
             builder.RegisterType<DocsStartup>()
                 .Keyed<IStartup>(DocsStartup.Id);
 
-            Func<object, IStartup> getStartup = ServiceConfiguration.GetStartup(getContainer());
-            yield return getStartup(OwinStartup.Id);
-            yield return getStartup(LoggingStartup.Id);
-            yield return getStartup(AuthStartup.Id);
-            yield return getStartup(WebApiStartup.Id);
-            yield return getStartup(DocsStartup.Id);
+            Action<object> runStartup = ServiceConfiguration.GetStartupForContainerRunner(getContainer());
+            runStartup(OwinStartup.Id);
+            runStartup(LoggingStartup.Id);
+            runStartup(AuthStartup.Id);
+            runStartup(WebApiStartup.Id);
+            runStartup(DocsStartup.Id);
         }
 
         public Serilog.LoggerConfiguration ConfigureLogging(Serilog.LoggerConfiguration logging)

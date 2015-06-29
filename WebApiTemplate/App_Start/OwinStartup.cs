@@ -12,13 +12,15 @@ namespace webapitmpl.App_Start
         public static readonly object Id = new object();
 
         private ILifetimeScope scope;
+        private IAppBuilder app;
         
-        public OwinStartup(ILifetimeScope scope)
+        public OwinStartup(IAppBuilder app, ILifetimeScope scope)
         {
+            this.app = app;
             this.scope = scope;
         }
 
-        public void Configuration(IAppBuilder app)
+        public void Configuration()
         {
             // Setup a dependency scope per request, at the OWIN layer
             // Make IOwinContext available for use in a request

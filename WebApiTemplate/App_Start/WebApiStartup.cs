@@ -20,14 +20,16 @@ namespace webapitmpl.App_Start
 
         private ILifetimeScope container;
         private HttpConfiguration config;
+        private IAppBuilder app;
 
-        public WebApiStartup(HttpConfiguration config, ILifetimeScope madeContainer)
+        public WebApiStartup(IAppBuilder app, HttpConfiguration config, ILifetimeScope madeContainer)
         {
+            this.app = app;
             this.config = config;
             this.container = madeContainer;
         }
 
-        public void Configuration(IAppBuilder app)
+        public void Configuration()
         {
             // Enforce specific Json formatting
             config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;

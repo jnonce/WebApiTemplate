@@ -20,13 +20,15 @@ namespace webapitmpl.App_Start
         public static readonly object Id = new object();
 
         private HttpConfiguration config;
+        private IAppBuilder app;
 
-        public DocsStartup(HttpConfiguration config)
+        public DocsStartup(IAppBuilder app, HttpConfiguration config)
         {
+            this.app = app;
             this.config = config;
         }
 
-        public void Configuration(IAppBuilder appBuilder)
+        public void Configuration()
         {
             config
                 .EnableSwagger(ConfigureSwagger)

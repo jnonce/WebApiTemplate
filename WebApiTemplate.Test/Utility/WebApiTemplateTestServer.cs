@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Testing;
@@ -16,7 +15,7 @@ namespace WebApiTemplate.Test
     /// </summary>
     public static class WebApiTemplateTestServer
     {
-        public static TestServer CreateServer(Func<ContainerBuilder, Func<IContainer>, IEnumerable<IStartup>> builderMethod)
+        public static TestServer CreateServer(Action<ContainerBuilder, Func<IContainer>> builderMethod)
         {
             return TestServer.Create(
                 app =>
@@ -51,7 +50,7 @@ namespace WebApiTemplate.Test
                 .WriteTo.Console(outputTemplate: "{Timestamp:mm:ss:fff} [{Level}] {Message}{NewLine}{Exception}");
         }
 
-        private static IEnumerable<IStartup> StandardCfg(ContainerBuilder builder, Func<IContainer> getContainer)
+        private static void StandardCfg(ContainerBuilder builder, Func<IContainer> getContainer)
         {
             builder
             .RegisterModule<ProviderServicesModule>()
@@ -62,10 +61,10 @@ namespace WebApiTemplate.Test
                     ConfiguringLogging = ConfigureStdLogging
                 });
 
-            Func<object, IStartup> getStartup = ServiceConfiguration.GetStartup(getContainer());
-            yield return getStartup(OwinStartup.Id);
-            yield return getStartup(LoggingStartup.Id);
-            yield return getStartup(WebApiStartup.Id);
+            Action<object> runStartup = ServiceConfiguration.GetStartupForContainerRunner(getContainer());
+            runStartup(OwinStartup.Id);
+            runStartup(LoggingStartup.Id);
+            runStartup(WebApiStartup.Id);
         }
     }
 }

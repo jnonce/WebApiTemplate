@@ -30,21 +30,23 @@ namespace webapitmpl.Configuration
         /// Called to startup the application using the active configuration
         /// </summary>
         /// <param name="builder">The builder.</param>
+        /// <param name="getContainer">Gets the container</param>
         /// <returns></returns>
-        public static IEnumerable<IStartup> OnStartup(ContainerBuilder builder, Func<IContainer> getContainer)
+        public static void OnStartup(ContainerBuilder builder, Func<IContainer> getContainer)
         {
-            return new DevServiceConfiguration().Configure(builder, getContainer);
+            new DevServiceConfiguration().Configure(builder, getContainer);
         }
 
         /// <summary>
         /// Configures the specified startup sequence.
         /// </summary>
         /// <param name="builder">Configure the services in the container.</param>
+        /// <param name="getContainer">Gets the container</param>
         /// <returns>
         /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
         /// the container
         /// </returns>
-        public IEnumerable<IStartup> Configure(ContainerBuilder builder, Func<IContainer> getContainer)
+        public void Configure(ContainerBuilder builder, Func<IContainer> getContainer)
         {
             builder.RegisterModule<ProviderServicesModule>();
             builder.RegisterModule<WebApiServicesModule>();
@@ -58,17 +60,17 @@ namespace webapitmpl.Configuration
             builder.RegisterType<AuthStartup>()
                 .Keyed<IStartup>(AuthStartup.Id);
 
-            Func<object, IStartup> getStartup = GetStartup(getContainer());
-            yield return getStartup(OwinStartup.Id);
-            yield return getStartup(LoggingStartup.Id);
-            yield return getStartup(AuthStartup.Id);
-            yield return getStartup(WebApiStartup.Id);
+            Action<object> runStartup = GetStartupForContainerRunner(getContainer());
+            runStartup(OwinStartup.Id);
+            runStartup(LoggingStartup.Id);
+            runStartup(AuthStartup.Id);
+            runStartup(WebApiStartup.Id);
         }
 
         // Utility to easily retrieve an IStartup by key from a container
-        internal static Func<object, IStartup> GetStartup(IContainer container)
+        internal static Action<object> GetStartupForContainerRunner(IComponentContext container)
         {
-            return key => container.ResolveKeyed<IStartup>(key);
+            return key => container.ResolveKeyed<IStartup>(key).Configuration();
         }
 
         /// <summary>

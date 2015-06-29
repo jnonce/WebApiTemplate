@@ -13,12 +13,21 @@ namespace webapitmpl.App_Start
         /// The identifier
         /// </summary>
         public static readonly object Id = new object();
+        private IAppBuilder app;
 
         /// <summary>
-        /// Configurations the specified application.
+        /// Initializes a new instance of the <see cref="AuthStartup"/> class.
         /// </summary>
-        /// <param name="app">The application.</param>
-        public void Configuration(IAppBuilder app)
+        /// <param name="app">The Owin application.</param>
+        public AuthStartup(IAppBuilder app)
+        {
+            this.app = app;
+        }
+
+        /// <summary>
+        /// Configurations the application.
+        /// </summary>
+        public void Configuration()
         {
             app.UseCors(CorsOptions.AllowAll);
         }

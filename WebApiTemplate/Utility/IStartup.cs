@@ -12,8 +12,7 @@ namespace webapitmpl.Utility
         /// <summary>
         /// Configures the Owin pipeline
         /// </summary>
-        /// <param name="appBuilder">The application builder.</param>
-        void Configuration(IAppBuilder appBuilder);
+        void Configuration();
     }
 
     /// <summary>
@@ -21,13 +20,13 @@ namespace webapitmpl.Utility
     /// </summary>
     public class DelegateStartup : IStartup
     {
-        private Action<IAppBuilder> configurer;
+        private Action configurer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelegateStartup"/> class.
         /// </summary>
         /// <param name="configurer">The configurer.</param>
-        public DelegateStartup(Action<IAppBuilder> configurer)
+        public DelegateStartup(Action configurer)
         {
             this.configurer = configurer;
         }
@@ -35,10 +34,9 @@ namespace webapitmpl.Utility
         /// <summary>
         /// Configures the Owin pipeline
         /// </summary>
-        /// <param name="appBuilder">The application builder.</param>
-        public void Configuration(IAppBuilder appBuilder)
+        public void Configuration()
         {
-            configurer(appBuilder);
+            configurer();
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Autofac;
 using Microsoft.Owin.Hosting;
-using Owin;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.RollingFile;
 using webapitmpl.App_Start;
@@ -32,9 +31,9 @@ namespace webapitmpl.Configuration
         /// </summary>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public static object[] OnStartup(ContainerBuilder builder)
+        public static IEnumerable<IStartup> OnStartup(ContainerBuilder builder, Func<IContainer> getContainer)
         {
-            return new DevServiceConfiguration().Configure(builder);
+            return new DevServiceConfiguration().Configure(builder, getContainer);
         }
 
         /// <summary>
@@ -45,7 +44,7 @@ namespace webapitmpl.Configuration
         /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
         /// the container
         /// </returns>
-        public object[] Configure(ContainerBuilder builder)
+        public IEnumerable<IStartup> Configure(ContainerBuilder builder, Func<IContainer> getContainer)
         {
             builder.RegisterModule<ProviderServicesModule>();
             builder.RegisterModule<WebApiServicesModule>();
@@ -59,13 +58,17 @@ namespace webapitmpl.Configuration
             builder.RegisterType<AuthStartup>()
                 .Keyed<IStartup>(AuthStartup.Id);
 
-            return new [] {
-                OwinStartup.Id,
-                LoggingStartup.Id,
-                AuthStartup.Id,
-                WebApiStartup.Id,
-                DocsStartup.Id
-            };
+            Func<object, IStartup> getStartup = GetStartup(getContainer());
+            yield return getStartup(OwinStartup.Id);
+            yield return getStartup(LoggingStartup.Id);
+            yield return getStartup(AuthStartup.Id);
+            yield return getStartup(WebApiStartup.Id);
+        }
+
+        // Utility to easily retrieve an IStartup by key from a container
+        internal static Func<object, IStartup> GetStartup(IContainer container)
+        {
+            return key => container.ResolveKeyed<IStartup>(key);
         }
 
         /// <summary>

@@ -16,51 +16,19 @@ namespace WebApiTemplate.Test
     /// </summary>
     public static class WebApiTemplateTestServer
     {
-        public static TestServer CreateServer(Func<ContainerBuilder, Func<ContainerBuilder, IContainer>, IEnumerable<IStartup>> onStart)
+        public static TestServer CreateServer(Func<ContainerBuilder, Func<IContainer>, IEnumerable<IStartup>> builderMethod)
         {
             return TestServer.Create(
                 app =>
                 {
                     var startup = new webapitmpl.App_Start.Startup();
-                    startup.Configuration(app, onStart);
-                });
-        }
-
-        public static TestServer CreateServer(Action<ContainerBuilder> onStart)
-        {
-            return TestServer.Create(
-                app =>
-                {
-                    var startup = new webapitmpl.App_Start.Startup();
-                    startup.Configuration(
-                        app,
-                        builder =>
-                        {
-                            onStart(builder);
-                            return ServiceConfiguration.CommonStartupSequence;
-                        });
+                    startup.Configuration(app, builderMethod);
                 });
         }
 
         public static TestServer CreateServer()
         {
-            return CreateServer(
-                builder => builder
-                    .RegisterModule<ProviderServicesModule>()
-                    .RegisterModule(
-                        new WebApiServicesModule
-                        {
-                            ConfiguringWebApi = cfg =>
-                            {
-                                cfg.IncludeErrorDetailPolicy = System.Web.Http.IncludeErrorDetailPolicy.Always;
-                            }
-                        })
-                    .RegisterModule(
-                        new LoggingServicesModule
-                        {
-                            ConfiguringLogging = ConfigureStdLogging
-                        })
-                );
+            return CreateServer(StandardCfg);
         }
 
         public static LoggerConfiguration ConfigureStdLogging(LoggerConfiguration config)
@@ -81,6 +49,23 @@ namespace WebApiTemplate.Test
 
             return config.Filter.With(webApiHushFilter)
                 .WriteTo.Console(outputTemplate: "{Timestamp:mm:ss:fff} [{Level}] {Message}{NewLine}{Exception}");
+        }
+
+        private static IEnumerable<IStartup> StandardCfg(ContainerBuilder builder, Func<IContainer> getContainer)
+        {
+            builder
+            .RegisterModule<ProviderServicesModule>()
+            .RegisterModule<WebApiServicesModule>()
+            .RegisterModule(
+                new LoggingServicesModule
+                {
+                    ConfiguringLogging = ConfigureStdLogging
+                });
+
+            Func<object, IStartup> getStartup = ServiceConfiguration.GetStartup(getContainer());
+            yield return getStartup(OwinStartup.Id);
+            yield return getStartup(LoggingStartup.Id);
+            yield return getStartup(WebApiStartup.Id);
         }
     }
 }

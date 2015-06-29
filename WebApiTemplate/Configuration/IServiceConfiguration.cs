@@ -25,6 +25,6 @@ namespace webapitmpl.Configuration
         /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration"/> to run from
         /// the container
         /// </returns>
-        object[] Configure(ContainerBuilder builder);
+        IEnumerable<IStartup> Configure(ContainerBuilder builder, Func<IContainer> getContainer);
     }
 }

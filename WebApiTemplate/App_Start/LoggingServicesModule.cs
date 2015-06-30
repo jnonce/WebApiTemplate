@@ -42,8 +42,7 @@ namespace webapitmpl.App_Start
                 .As<System.Web.Http.Tracing.ITraceWriter>();
 
             builder.RegisterType<LoggingStartup>()
-                .SingleInstance()
-                .Keyed<IStartup>(LoggingStartup.Id);
+                .SingleInstance();
         }
     }
 }

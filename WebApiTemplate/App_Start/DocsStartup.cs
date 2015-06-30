@@ -14,11 +14,6 @@ namespace webapitmpl.App_Start
     /// </summary>
     internal class DocsStartup : IStartup
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public static readonly object Id = new object();
-
         private HttpConfiguration config;
         private IAppBuilder app;
 

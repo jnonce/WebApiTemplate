@@ -30,8 +30,11 @@ namespace webapitmpl.Configuration
         /// <summary>
         /// Configures the specified startup sequence.
         /// </summary>
-        /// <param name="builder">Configure the services in the container.</param>
-        /// <param name="getContainer">Gets the container</param>
+        /// <param name="app">Configure the app.</param>
+        /// <param name="runServer">
+        /// When called, begins running requests and returns a Task indicating when
+        /// requests will no longer be run.
+        /// </param>
         /// <returns>
         /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
         /// the container
@@ -49,64 +52,22 @@ namespace webapitmpl.Configuration
                 });
 
             // Support CORS
-            builder.RegisterType<AuthStartup>()
-                .Keyed<IStartup>(AuthStartup.Id);
+            builder.RegisterType<AuthStartup>();
 
             using (IContainer container = builder.Build())
             {
-                var runner = new Starter(container);
-                runner
-                    .Configuration(OwinStartup.Id)
-                    .Configuration(LoggingStartup.Id)
-                    .Configuration(AuthStartup.Id)
-                    .Configuration<WebApiStartup>(
-                        webApi =>
-                        {
-                            webApi.Configuration();
-                        });
+                container.RunStartup<OwinStartup>();
+                container.RunStartup<LoggingStartup>();
+                container.RunStartup<AuthStartup>();
+                container.RunStartup<WebApiStartup>(
+                    webApi =>
+                    {
+                        // ConfiguringWebApi
+                    });
 
                 await runServer(app);
             }
 
-        }
-
-        // Utility to easily retrieve an IStartup by key from a container
-        internal static Action<object> GetStartupForContainerRunner(IComponentContext container)
-        {
-            return key => container.ResolveKeyed<IStartup>(key).Configuration();
-        }
-
-        internal static void RenStartupForContainerRunner<T>(IComponentContext container, Action<T> preStartup)
-            where T : IStartup
-        {
-            var item = container.Resolve<T>();
-            preStartup(item);
-            item.Configuration();
-        }
-
-        internal class Starter
-        {
-            public Starter(IComponentContext context)
-            {
-                this.ComponentContext = context;
-            }
-
-            public IComponentContext ComponentContext { get; private set; }
-
-            public Starter Configuration(object key)
-            {
-                ComponentContext.ResolveKeyed<IStartup>(key).Configuration();
-                return this;
-            }
-
-            public Starter Configuration<T>(Action<T> preStartup)
-                where T : IStartup
-            {
-                var item = ComponentContext.Resolve<T>();
-                preStartup(item);
-                item.Configuration();
-                return this;
-            }
         }
 
         /// <summary>

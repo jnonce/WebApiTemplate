@@ -50,21 +50,18 @@ namespace webapitmpl.Configuration
                 });
 
             // Support CORS
-            builder.RegisterType<AuthStartup>()
-                .Keyed<IStartup>(AuthStartup.Id);
+            builder.RegisterType<AuthStartup>();
 
             // Support Swagger
-            builder.RegisterType<DocsStartup>()
-                .Keyed<IStartup>(DocsStartup.Id);
+            builder.RegisterType<DocsStartup>();
 
             using (IContainer container = builder.Build())
             {
-                Action<object> runStartup = ServiceConfiguration.GetStartupForContainerRunner(container);
-                runStartup(OwinStartup.Id);
-                runStartup(LoggingStartup.Id);
-                runStartup(AuthStartup.Id);
-                runStartup(WebApiStartup.Id);
-                runStartup(DocsStartup.Id);
+                container.RunStartup<OwinStartup>();
+                container.RunStartup<LoggingStartup>();
+                container.RunStartup<AuthStartup>();
+                container.RunStartup<WebApiStartup>();
+                container.RunStartup<DocsStartup>();
 
                 await runServer(app);
             }

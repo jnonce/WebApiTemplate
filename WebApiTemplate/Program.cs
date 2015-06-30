@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Owin.Hosting;
+using Owin;
 using webapitmpl.Configuration;
 
 namespace webapitmpl
@@ -12,22 +13,32 @@ namespace webapitmpl
             MainAsync().Wait();
         }
 
-        private static async Task MainAsync()
+        private static Task MainAsync()
         {
             var cfg = ServiceConfiguration.GetCurrent();
 
             StartOptions options = new StartOptions();
             cfg.Configure(options);
 
-            var serverReadyToStart = new TaskCompletionSource<bool>();
+            return ServerAsync(options, cfg.Configure, GetConsoleCancel);
+        }
+
+        private static async Task ServerAsync(
+            StartOptions options,
+            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> startup,
+            Func<Task> serverWait)
+        {
             var serverFinished = new TaskCompletionSource<bool>();
+            var serverReadyToStart = new TaskCompletionSource<bool>();
             Task configLifecycle = null;
 
             using (WebApp.Start(
                 options,
                 app =>
                 {
-                    configLifecycle = cfg.Configure(app, app2 =>
+                    configLifecycle = startup(
+                        app,
+                        app2 =>
                         {
                             serverReadyToStart.SetResult(true);
                             return serverFinished.Task;
@@ -35,9 +46,9 @@ namespace webapitmpl
                     serverReadyToStart.Task.Wait();
                 }))
             {
-                await GetConsoleCancel();
+                await serverWait();
             }
-            
+
             if (configLifecycle != null)
             {
                 serverFinished.SetResult(true);

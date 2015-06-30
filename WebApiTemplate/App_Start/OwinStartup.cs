@@ -6,11 +6,6 @@ namespace webapitmpl.App_Start
 {
     internal class OwinStartup : IStartup
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public static readonly object Id = new object();
-
         private ILifetimeScope scope;
         private IAppBuilder app;
         

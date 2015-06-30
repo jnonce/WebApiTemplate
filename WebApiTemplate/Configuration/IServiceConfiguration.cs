@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Autofac;
 using Microsoft.Owin.Hosting;
 using Owin;
-using webapitmpl.Utility;
 
 namespace webapitmpl.Configuration
 {
@@ -23,8 +20,12 @@ namespace webapitmpl.Configuration
         /// Configures the specified startup sequence.
         /// </summary>
         /// <param name="app">Configure the app.</param>
+        /// <param name="runServer">
+        /// When called, begins running requests and returns a Task indicating when
+        /// requests will no longer be run.
+        /// </param>
         /// <returns>
-        /// TODO
+        /// Task which indicates when the server is finished running and all resources are released
         /// </returns>
         Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer);
     }

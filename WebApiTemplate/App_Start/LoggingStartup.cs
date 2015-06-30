@@ -10,11 +10,6 @@ namespace webapitmpl.App_Start
 {
     internal class LoggingStartup : IStartup, IDisposable
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public static readonly object Id = new object();
-
         private Serilog.ILogger logger;
         private IAppBuilder app;
 

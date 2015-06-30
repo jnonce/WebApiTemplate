@@ -13,11 +13,6 @@ namespace webapitmpl.App_Start
     /// </summary>
     internal class WebApiStartup : IStartup
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public static readonly object Id = new object();
-
         private ILifetimeScope container;
         private HttpConfiguration config;
         private IAppBuilder app;

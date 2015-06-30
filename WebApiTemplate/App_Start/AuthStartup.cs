@@ -9,10 +9,6 @@ namespace webapitmpl.App_Start
     /// </summary>
     public class AuthStartup : IStartup
     {
-        /// <summary>
-        /// The identifier
-        /// </summary>
-        public static readonly object Id = new object();
         private IAppBuilder app;
 
         /// <summary>

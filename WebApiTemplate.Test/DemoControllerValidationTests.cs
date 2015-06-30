@@ -30,22 +30,23 @@ namespace WebApiTemplate.Test
         [TestMethod]
         public async Task CreateWidget()
         {
-            using (var server = WebApiTemplateTestServer.CreateServer())
-            {
-                Widget postingWidget = new Widget { };
-                HttpResponseMessage response = await server.CreateRequest("api/widget")
-                    .AddHeader("api-version", "2.7")
-                    .And(msg => msg.Content = new ObjectContent<Widget>(postingWidget, jsonMediaTypeFormatter))
-                    .PostAsync();
+            await WebApiTemplateTestServer.ServerAsync(
+                async server =>
+                {
+                    Widget postingWidget = new Widget { };
+                    HttpResponseMessage response = await server.CreateRequest("api/widget")
+                        .AddHeader("api-version", "2.7")
+                        .And(msg => msg.Content = new ObjectContent<Widget>(postingWidget, jsonMediaTypeFormatter))
+                        .PostAsync();
 
-                Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+                    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 
-                var err = await response.Content.ReadAsAsync<HttpError>(new[] { this.jsonMediaTypeFormatter });
-                Assert.IsNotNull(err.Message);
-                CollectionAssert.AreEquivalent(
-                    new[] { "'Name' must not be empty." },
-                    (string[])err.ModelState["widget.Name"]);
-            }
+                    var err = await response.Content.ReadAsAsync<HttpError>(new[] { this.jsonMediaTypeFormatter });
+                    Assert.IsNotNull(err.Message);
+                    CollectionAssert.AreEquivalent(
+                        new[] { "'Name' must not be empty." },
+                        (string[])err.ModelState["widget.Name"]);
+                });
         }
 
         void startup_ConfiguringWebApi(System.Web.Http.HttpConfiguration httpConfiguration)

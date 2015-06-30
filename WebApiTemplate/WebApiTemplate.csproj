@@ -130,6 +130,7 @@
   <ItemGroup>
     <Compile Include="App_Start\LoggingServicesModule.cs" />
     <Compile Include="App_Start\LoggingStartup.cs" />
+    <Compile Include="App_Start\OwinServicesModule.cs" />
     <Compile Include="App_Start\OwinStartup.cs" />
     <Compile Include="App_Start\DocsStartup.cs" />
     <Compile Include="App_Start\ProviderServicesModule.cs" />
@@ -154,7 +155,6 @@
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Providers\DemoProvider.cs" />
-    <Compile Include="App_Start\Startup.cs" />
     <Compile Include="Utility\ValidateModelAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

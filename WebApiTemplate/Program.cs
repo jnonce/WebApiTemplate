@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin.Hosting;
 using webapitmpl.Configuration;
@@ -22,9 +19,29 @@ namespace webapitmpl
             StartOptions options = new StartOptions();
             cfg.Configure(options);
 
-            using (WebApp.Start<webapitmpl.App_Start.Startup>(options))
+            var serverReadyToStart = new TaskCompletionSource<bool>();
+            var serverFinished = new TaskCompletionSource<bool>();
+            Task configLifecycle = null;
+
+            using (WebApp.Start(
+                options,
+                app =>
+                {
+                    configLifecycle = cfg.Configure(app, app2 =>
+                        {
+                            serverReadyToStart.SetResult(true);
+                            return serverFinished.Task;
+                        });
+                    serverReadyToStart.Task.Wait();
+                }))
             {
                 await GetConsoleCancel();
+            }
+            
+            if (configLifecycle != null)
+            {
+                serverFinished.SetResult(true);
+                await configLifecycle;
             }
         }
 

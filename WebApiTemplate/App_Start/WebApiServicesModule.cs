@@ -38,6 +38,7 @@ namespace webapitmpl.App_Start
 
             // Register a starter to insert webapi into the pipeline
             builder.RegisterType<WebApiStartup>()
+                .AsSelf()
                 .Keyed<IStartup>(WebApiStartup.Id);
         }
     }

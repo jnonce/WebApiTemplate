@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
+using Owin;
 using Serilog;
 using webapitmpl.App_Start;
 using webapitmpl.Utility;
@@ -19,10 +20,18 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public void Configure(ContainerBuilder builder, Func<IContainer> getContainer)
+        public async Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer)
         {
+            var builder = new ContainerBuilder();
+
             // Register primary services
             builder.RegisterModule<ProviderServicesModule>();
+
+            builder.RegisterModule(
+                new OwinServicesModule
+                {
+                    AppBuilder = app
+                });
 
             // Allow documentation to be generated
             builder.RegisterType<DocsStartup>().SingleInstance().As<IStartup>();
@@ -48,12 +57,17 @@ namespace webapitmpl.Configuration
             builder.RegisterType<DocsStartup>()
                 .Keyed<IStartup>(DocsStartup.Id);
 
-            Action<object> runStartup = ServiceConfiguration.GetStartupForContainerRunner(getContainer());
-            runStartup(OwinStartup.Id);
-            runStartup(LoggingStartup.Id);
-            runStartup(AuthStartup.Id);
-            runStartup(WebApiStartup.Id);
-            runStartup(DocsStartup.Id);
+            using (IContainer container = builder.Build())
+            {
+                Action<object> runStartup = ServiceConfiguration.GetStartupForContainerRunner(container);
+                runStartup(OwinStartup.Id);
+                runStartup(LoggingStartup.Id);
+                runStartup(AuthStartup.Id);
+                runStartup(WebApiStartup.Id);
+                runStartup(DocsStartup.Id);
+
+                await runServer(app);
+            }
         }
 
         public Serilog.LoggerConfiguration ConfigureLogging(Serilog.LoggerConfiguration logging)

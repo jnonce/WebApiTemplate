@@ -21,7 +21,7 @@ namespace webapitmpl.App_Start
         public LoggingStartup(IAppBuilder app, Serilog.ILogger logger)
         {
             this.app = app;
-            this.logger = logger.ForContext<Startup>();
+            this.logger = logger;
         }
 
         public void Configuration()

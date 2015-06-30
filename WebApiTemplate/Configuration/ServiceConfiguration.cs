@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Owin.Hosting;
+using Owin;
 using Serilog.Formatting.Json;
 using Serilog.Sinks.RollingFile;
 using webapitmpl.App_Start;
@@ -27,17 +28,6 @@ namespace webapitmpl.Configuration
         }
 
         /// <summary>
-        /// Called to startup the application using the active configuration
-        /// </summary>
-        /// <param name="builder">The builder.</param>
-        /// <param name="getContainer">Gets the container</param>
-        /// <returns></returns>
-        public static void OnStartup(ContainerBuilder builder, Func<IContainer> getContainer)
-        {
-            new DevServiceConfiguration().Configure(builder, getContainer);
-        }
-
-        /// <summary>
         /// Configures the specified startup sequence.
         /// </summary>
         /// <param name="builder">Configure the services in the container.</param>
@@ -46,8 +36,10 @@ namespace webapitmpl.Configuration
         /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
         /// the container
         /// </returns>
-        public void Configure(ContainerBuilder builder, Func<IContainer> getContainer)
+        public async Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer)
         {
+            var builder = new ContainerBuilder();
+
             builder.RegisterModule<ProviderServicesModule>();
             builder.RegisterModule<WebApiServicesModule>();
             builder.RegisterModule(
@@ -60,17 +52,61 @@ namespace webapitmpl.Configuration
             builder.RegisterType<AuthStartup>()
                 .Keyed<IStartup>(AuthStartup.Id);
 
-            Action<object> runStartup = GetStartupForContainerRunner(getContainer());
-            runStartup(OwinStartup.Id);
-            runStartup(LoggingStartup.Id);
-            runStartup(AuthStartup.Id);
-            runStartup(WebApiStartup.Id);
+            using (IContainer container = builder.Build())
+            {
+                var runner = new Starter(container);
+                runner
+                    .Configuration(OwinStartup.Id)
+                    .Configuration(LoggingStartup.Id)
+                    .Configuration(AuthStartup.Id)
+                    .Configuration<WebApiStartup>(
+                        webApi =>
+                        {
+                            webApi.Configuration();
+                        });
+
+                await runServer(app);
+            }
+
         }
 
         // Utility to easily retrieve an IStartup by key from a container
         internal static Action<object> GetStartupForContainerRunner(IComponentContext container)
         {
             return key => container.ResolveKeyed<IStartup>(key).Configuration();
+        }
+
+        internal static void RenStartupForContainerRunner<T>(IComponentContext container, Action<T> preStartup)
+            where T : IStartup
+        {
+            var item = container.Resolve<T>();
+            preStartup(item);
+            item.Configuration();
+        }
+
+        internal class Starter
+        {
+            public Starter(IComponentContext context)
+            {
+                this.ComponentContext = context;
+            }
+
+            public IComponentContext ComponentContext { get; private set; }
+
+            public Starter Configuration(object key)
+            {
+                ComponentContext.ResolveKeyed<IStartup>(key).Configuration();
+                return this;
+            }
+
+            public Starter Configuration<T>(Action<T> preStartup)
+                where T : IStartup
+            {
+                var item = ComponentContext.Resolve<T>();
+                preStartup(item);
+                item.Configuration();
+                return this;
+            }
         }
 
         /// <summary>

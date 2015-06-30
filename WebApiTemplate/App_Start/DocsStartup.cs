@@ -75,7 +75,7 @@ namespace webapitmpl.App_Start
 
         private static void ConfigureSwaggerFromXmlComments(SwaggerDocsConfig swagger)
         {
-            var codebaseUri = new Uri(typeof(Startup).Assembly.CodeBase);
+            var codebaseUri = new Uri(typeof(DocsStartup).Assembly.CodeBase);
             string path = Path.ChangeExtension(codebaseUri.LocalPath, "xml");
 
             if (File.Exists(path))

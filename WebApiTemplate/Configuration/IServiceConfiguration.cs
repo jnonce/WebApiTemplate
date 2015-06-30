@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Owin.Hosting;
+using Owin;
 using webapitmpl.Utility;
 
 namespace webapitmpl.Configuration
@@ -20,12 +22,10 @@ namespace webapitmpl.Configuration
         /// <summary>
         /// Configures the specified startup sequence.
         /// </summary>
-        /// <param name="builder">Configure the services in the container.</param>
-        /// <param name="getContainer">Gets the container</param>
+        /// <param name="app">Configure the app.</param>
         /// <returns>
-        /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration"/> to run from
-        /// the container
+        /// TODO
         /// </returns>
-        void Configure(ContainerBuilder builder, Func<IContainer> getContainer);
+        Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer);
     }
 }

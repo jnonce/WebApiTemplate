@@ -155,6 +155,7 @@
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Providers\DemoProvider.cs" />
+    <Compile Include="Utility\StartupSequencer.cs" />
     <Compile Include="Utility\ValidateModelAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

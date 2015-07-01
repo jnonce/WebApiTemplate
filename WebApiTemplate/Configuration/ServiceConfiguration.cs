@@ -61,27 +61,16 @@ namespace webapitmpl.Configuration
                 var logger = container.Resolve<Serilog.ILogger>();
                 var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                Func<Task> startupSequence = GetStartChain(
-                    () => runServer(app),
+                var seq = new StartupSequencer
+                {
                     new OwinStartup(app, container),
                     new LoggingStartup(app, logger),
                     new AuthStartup(app),
                     new WebApiStartup(app, httpConfig, container)
-                    );
+                };
 
-                await startupSequence();
+                await seq.Execute(() => runServer(app));
             }
-        }
-
-        public static Func<Task> GetStartChain(Func<Task> runServer, params IStartup[] startup)
-        {
-            return startup.Reverse().Aggregate(
-                runServer,
-                (runServerHere, starter) =>
-                    {
-                        return () => starter.Configuration(runServerHere);
-                    }
-                );
         }
 
         /// <summary>

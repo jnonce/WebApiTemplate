@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
 using Owin;
@@ -24,52 +26,42 @@ namespace webapitmpl.Configuration
         {
             var builder = new ContainerBuilder();
 
-            // Register primary services
-            builder.RegisterModule<ProviderServicesModule>();
-
-            builder.RegisterModule(
+            // Register common modules
+            builder
+                // Register primary services
+                .RegisterModule<ProviderServicesModule>()
+                .RegisterModule(
                 new OwinServicesModule
-                {
-                    AppBuilder = app
-                });
-
-            // Allow documentation to be generated
-            builder.RegisterType<DocsStartup>().SingleInstance().As<IStartup>();
-
-            // Setup for WebAPI
-            builder.RegisterModule(
-                new WebApiServicesModule
-                {
-                });
-
-            // Insert logging services
-            builder.RegisterModule(
-                new LoggingServicesModule
-                {
-                    ConfiguringLogging = ConfigureLogging
-                });
-
-            // Support CORS
-            builder.RegisterType<AuthStartup>();
-
-            // Support Swagger
-            builder.RegisterType<DocsStartup>();
+                    {
+                        AppBuilder = app
+                    })                
+                // Setup for WebAPI
+                .RegisterModule(
+                    new WebApiServicesModule
+                    {
+                    })
+                // Insert logging services
+                .RegisterModule(
+                    new LoggingServicesModule
+                    {
+                        ConfiguringLogging = ConfigureLogging
+                    });
 
             using (IContainer container = builder.Build())
             {
                 var logger = container.Resolve<Serilog.ILogger>();
                 var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                Func<Task> startupSequence = ServiceConfiguration.GetStartChain(
-                    () => runServer(app),
+                var seq = new StartupSequencer()
+                {
                     new OwinStartup(app, container),
                     new LoggingStartup(app, logger),
                     new AuthStartup(app),
                     new WebApiStartup(app, httpConfig, container),
-                    new DocsStartup(app, httpConfig)
-                    );
-
-                await startupSequence();
+                    new DocsStartup(app, httpConfig),
+                };
+                
+                await seq.Execute(() => runServer(app));
             }
         }
 

@@ -57,13 +57,19 @@ namespace webapitmpl.Configuration
 
             using (IContainer container = builder.Build())
             {
-                container.RunStartup<OwinStartup>();
-                container.RunStartup<LoggingStartup>();
-                container.RunStartup<AuthStartup>();
-                container.RunStartup<WebApiStartup>();
-                container.RunStartup<DocsStartup>();
+                var logger = container.Resolve<Serilog.ILogger>();
+                var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                await runServer(app);
+                Func<Task> startupSequence = ServiceConfiguration.GetStartChain(
+                    () => runServer(app),
+                    new OwinStartup(app, container),
+                    new LoggingStartup(app, logger),
+                    new AuthStartup(app),
+                    new WebApiStartup(app, httpConfig, container),
+                    new DocsStartup(app, httpConfig)
+                    );
+
+                await startupSequence();
             }
         }
 

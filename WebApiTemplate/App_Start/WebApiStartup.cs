@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Http;
 using Autofac;
 using Autofac.Integration.WebApi;
 using jnonce.WebApi.VersionedRouting;
@@ -24,7 +26,7 @@ namespace webapitmpl.App_Start
             this.container = madeContainer;
         }
 
-        public void Configuration()
+        public Task Configuration(Func<Task> next)
         {
             // Enforce specific Json formatting
             config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
@@ -43,6 +45,8 @@ namespace webapitmpl.App_Start
 
             // Place WebApi onto the Owin pipeline
             app.UseWebApi(config);
+
+            return next();
         }
     }
 }

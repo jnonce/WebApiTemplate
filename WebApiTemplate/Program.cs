@@ -16,21 +16,10 @@ namespace webapitmpl
             cfg.Configure(options);
 
             Task serverExecution = ServerAsync(
-                options,
-                cfg.Configure,
-                GetConsoleCancel);
-            serverExecution.Wait();
-        }
-
-        internal static Task ServerAsync(
-            StartOptions options,
-            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> startup,
-            Func<Task> serverWait)
-        {
-            return ServerAsync(
                 cfgMethod => WebApp.Start(options, cfgMethod),
-                startup,
-                _ => serverWait());
+                cfg.Configure,
+                _ => GetConsoleCancel());
+            serverExecution.Wait();
         }
 
         internal static async Task ServerAsync<TServer>(
@@ -48,20 +37,34 @@ namespace webapitmpl
             // Task completes when startup/shutdown is finished
             Task configLifecycle = null;
 
-            TServer server = startServer(
+            // Method which, when called sets a flag indicating the server is ready to process requests
+            // Returns a task which indicates when the server is finished processing requests
+            Func<IAppBuilder, Task> markServerReadyToStart =
                 app =>
                 {
-                    configLifecycle = startup(
-                        app,
-                        _ =>
-                        {
-                            serverReadyToStart.SetResult(true);
-                            return serverFinished.Task;
-                        });
-                    WaitAny(serverReadyToStart.Task, configLifecycle);
-                });
+                    serverReadyToStart.SetResult(true);
+                    return serverFinished.Task;
+                };
 
-            using (server)
+            // Define a method to configure the web application
+            Action<IAppBuilder> configureWebApp =
+                app =>
+                {
+                    // Call the startup method.
+                    configLifecycle = startup(app, markServerReadyToStart);
+
+                    // Wait for serverReadyToStart.
+                    // Handle the case where serverReadyToStart is never achieved but configLifecycle completes
+                    int index = Task.WaitAny(serverReadyToStart.Task, configLifecycle);
+                    if (index != 0)
+                    {
+                        configLifecycle.Wait();
+                        throw new OperationCanceledException();
+                    }
+                };
+
+            // startServer calls WebApp.Start...
+            using (TServer server = startServer(configureWebApp))
             {
                 await serverWait(server);
             }
@@ -71,12 +74,6 @@ namespace webapitmpl
                 serverFinished.SetResult(true);
                 await configLifecycle;
             }
-        }
-
-        private static void WaitAny(params Task[] tasks)
-        {
-            int index = Task.WaitAny(tasks);
-            tasks[index].Wait();
         }
 
         private static Task GetConsoleCancel()

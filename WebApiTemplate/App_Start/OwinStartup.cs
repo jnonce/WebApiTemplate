@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System;
+using System.Threading.Tasks;
+using Autofac;
 using Owin;
 using webapitmpl.Utility;
 
@@ -15,11 +17,12 @@ namespace webapitmpl.App_Start
             this.scope = scope;
         }
 
-        public void Configuration()
+        public Task Configuration(Func<Task> next)
         {
             // Setup a dependency scope per request, at the OWIN layer
             // Make IOwinContext available for use in a request
             app.UseAutofacMiddleware(scope);
+            return next();
         }
     }
 }

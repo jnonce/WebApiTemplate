@@ -149,7 +149,6 @@
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />
     <Compile Include="Utility\CorrelationIdOwinContextExtensions.cs" />
     <Compile Include="Utility\IStartup.cs" />
-    <Compile Include="Utility\IStartupAutofacExtensions.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
     <Compile Include="Configuration\ServiceConfiguration.cs" />

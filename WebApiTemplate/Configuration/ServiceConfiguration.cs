@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using Autofac;
@@ -43,31 +44,44 @@ namespace webapitmpl.Configuration
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterModule<ProviderServicesModule>();
-            builder.RegisterModule<WebApiServicesModule>();
-            builder.RegisterModule(
-                new LoggingServicesModule
-                {
-                    ConfiguringLogging = ConfigureLogging
-                });
+            builder
+                .RegisterModule<ProviderServicesModule>()
+                .RegisterModule<WebApiServicesModule>()
+                .RegisterModule(
+                    new LoggingServicesModule
+                    {
+                        ConfiguringLogging = ConfigureLogging
+                    })
+                ;
 
-            // Support CORS
             builder.RegisterType<AuthStartup>();
 
             using (IContainer container = builder.Build())
             {
-                container.RunStartup<OwinStartup>();
-                container.RunStartup<LoggingStartup>();
-                container.RunStartup<AuthStartup>();
-                container.RunStartup<WebApiStartup>(
-                    webApi =>
-                    {
-                        // ConfiguringWebApi
-                    });
+                var logger = container.Resolve<Serilog.ILogger>();
+                var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                await runServer(app);
+                Func<Task> startupSequence = GetStartChain(
+                    () => runServer(app),
+                    new OwinStartup(app, container),
+                    new LoggingStartup(app, logger),
+                    new AuthStartup(app),
+                    new WebApiStartup(app, httpConfig, container)
+                    );
+
+                await startupSequence();
             }
+        }
 
+        public static Func<Task> GetStartChain(Func<Task> runServer, params IStartup[] startup)
+        {
+            return startup.Reverse().Aggregate(
+                runServer,
+                (runServerHere, starter) =>
+                    {
+                        return () => starter.Configuration(runServerHere);
+                    }
+                );
         }
 
         /// <summary>

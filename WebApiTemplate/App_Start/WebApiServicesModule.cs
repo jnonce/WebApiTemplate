@@ -35,9 +35,6 @@ namespace webapitmpl.App_Start
                 new HttpHeaderApiVersionProvider("api-version"));
             builder.RegisterInstance<IApiVersionProvider>(
                 new AcceptHeaderApiVersionProvider("vnd-api"));
-
-            // Register a starter to insert webapi into the pipeline
-            builder.RegisterType<WebApiStartup>();
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Owin.Cors;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Owin.Cors;
 using Owin;
 using webapitmpl.Utility;
 
@@ -23,9 +25,10 @@ namespace webapitmpl.App_Start
         /// <summary>
         /// Configurations the application.
         /// </summary>
-        public void Configuration()
+        public Task Configuration(Func<Task> next)
         {
             app.UseCors(CorsOptions.AllowAll);
+            return next();
         }
     }
 }

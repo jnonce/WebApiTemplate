@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Web.Http;
 using jnonce.WebApi.VersionedRouting;
 using Owin;
@@ -23,11 +24,12 @@ namespace webapitmpl.App_Start
             this.config = config;
         }
 
-        public void Configuration()
+        public Task Configuration(Func<Task> next)
         {
             config
                 .EnableSwagger(ConfigureSwagger)
                 .EnableSwaggerUi(ConfigureSwaggerUI);
+            return next();
         }
 
 

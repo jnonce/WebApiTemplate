@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.Owin.Logging;
 using Owin;
 using SerilogWeb.Owin;
@@ -8,7 +9,7 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    internal class LoggingStartup : IStartup, IDisposable
+    internal class LoggingStartup : IStartup
     {
         private Serilog.ILogger logger;
         private IAppBuilder app;
@@ -19,7 +20,7 @@ namespace webapitmpl.App_Start
             this.logger = logger;
         }
 
-        public void Configuration()
+        public async Task Configuration(Func<Task> next)
         {
             // Register Owin logging
             app.UseSerilogRequestContext();
@@ -32,10 +33,9 @@ namespace webapitmpl.App_Start
 
             // Initial log
             logger.Information("Server Started");
-        }
 
-        public void Dispose()
-        {
+            await next();
+
             logger.Information("Server Stopped");
         }
 

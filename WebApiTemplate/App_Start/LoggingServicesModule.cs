@@ -40,9 +40,6 @@ namespace webapitmpl.App_Start
             // Register WebApi logging
             builder.RegisterType<SerilogWebApiTraceWriter>()
                 .As<System.Web.Http.Tracing.ITraceWriter>();
-
-            builder.RegisterType<LoggingStartup>()
-                .SingleInstance();
         }
     }
 }

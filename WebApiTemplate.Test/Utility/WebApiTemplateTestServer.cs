@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Web.Http;
 using System.Web.Http.Tracing;
 using Autofac;
 using Microsoft.Owin.Testing;
@@ -19,7 +18,7 @@ namespace WebApiTemplate.Test
     public static class WebApiTemplateTestServer
     {
         public static Task ServerAsync(
-            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> startup,
+            Func<IAppBuilder, Func<Task>, Task> startup,
             Func<TestServer, Task> serverWait)
         {
             return webapitmpl.Program.ServerAsync(
@@ -57,15 +56,10 @@ namespace WebApiTemplate.Test
                 .WriteTo.Console(outputTemplate: "{Timestamp:mm:ss:fff} [{Level}] {Message}{NewLine}{Exception}");
         }
 
-        private static async Task StandardCfg(IAppBuilder app, Func<IAppBuilder, Task> runServer)
+        private static async Task StandardCfg(IAppBuilder app, Func<Task> runServer)
         {
             var builder = new ContainerBuilder();
             builder
-                .RegisterModule(
-                    new OwinServicesModule
-                    {
-                        AppBuilder = app
-                    })
                 .RegisterModule<ProviderServicesModule>()
                 .RegisterModule<WebApiServicesModule>()
                 .RegisterModule(
@@ -76,11 +70,17 @@ namespace WebApiTemplate.Test
 
             using (IContainer container = builder.Build())
             {
-                container.RunStartup<OwinStartup>();
-                container.RunStartup<LoggingStartup>();
-                container.RunStartup<WebApiStartup>();
-                container.Resolve<HttpConfiguration>().IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
-                await runServer(app);
+                var logger = container.Resolve<Serilog.ILogger>();
+                var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
+
+                var seq = new StartupSequencer()
+                {
+                    new OwinStartup(app, container),
+                    new LoggingStartup(app, logger),
+                    new WebApiStartup(app, httpConfig, container),
+                };
+
+                await seq.Execute(runServer);
             }
         }
     }

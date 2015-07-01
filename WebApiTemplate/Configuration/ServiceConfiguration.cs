@@ -40,7 +40,7 @@ namespace webapitmpl.Configuration
         /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
         /// the container
         /// </returns>
-        public async Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer)
+        public async Task Configure(IAppBuilder app, Func<Task> runServer)
         {
             var builder = new ContainerBuilder();
 
@@ -69,7 +69,7 @@ namespace webapitmpl.Configuration
                     new WebApiStartup(app, httpConfig, container)
                 };
 
-                await seq.Execute(() => runServer(app));
+                await seq.Execute(runServer);
             }
         }
 

@@ -130,7 +130,6 @@
   <ItemGroup>
     <Compile Include="App_Start\LoggingServicesModule.cs" />
     <Compile Include="App_Start\LoggingStartup.cs" />
-    <Compile Include="App_Start\OwinServicesModule.cs" />
     <Compile Include="App_Start\OwinStartup.cs" />
     <Compile Include="App_Start\DocsStartup.cs" />
     <Compile Include="App_Start\ProviderServicesModule.cs" />

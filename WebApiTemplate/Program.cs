@@ -24,7 +24,7 @@ namespace webapitmpl
 
         internal static async Task ServerAsync<TServer>(
             Func<Action<IAppBuilder>, TServer> startServer,
-            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> startup,
+            Func<IAppBuilder, Func<Task>, Task> startup,
             Func<TServer, Task> serverWait)
             where TServer : IDisposable
         {
@@ -39,8 +39,8 @@ namespace webapitmpl
 
             // Method which, when called sets a flag indicating the server is ready to process requests
             // Returns a task which indicates when the server is finished processing requests
-            Func<IAppBuilder, Task> markServerReadyToStart =
-                app =>
+            Func<Task> markServerReadyToStart =
+                () =>
                 {
                     serverReadyToStart.SetResult(true);
                     return serverFinished.Task;

@@ -27,6 +27,6 @@ namespace webapitmpl.Configuration
         /// <returns>
         /// Task which indicates when the server is finished running and all resources are released
         /// </returns>
-        Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer);
+        Task Configure(IAppBuilder app, Func<Task> runServer);
     }
 }

@@ -22,7 +22,7 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public async Task Configure(IAppBuilder app, Func<IAppBuilder, Task> runServer)
+        public async Task Configure(IAppBuilder app, Func<Task> runServer)
         {
             var builder = new ContainerBuilder();
 
@@ -30,11 +30,6 @@ namespace webapitmpl.Configuration
             builder
                 // Register primary services
                 .RegisterModule<ProviderServicesModule>()
-                .RegisterModule(
-                new OwinServicesModule
-                    {
-                        AppBuilder = app
-                    })                
                 // Setup for WebAPI
                 .RegisterModule(
                     new WebApiServicesModule
@@ -61,7 +56,7 @@ namespace webapitmpl.Configuration
                     new DocsStartup(app, httpConfig),
                 };
                 
-                await seq.Execute(() => runServer(app));
+                await seq.Execute(runServer);
             }
         }
 

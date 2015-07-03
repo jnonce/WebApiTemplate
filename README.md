@@ -1,13 +1,14 @@
 # WebApiTemplate
 
 This is a template project for WebApi services.
-It includes the basic structure for an Api service.
+It includes the basic structure for a RESTful Api service.
 
 Current features:
 
-* Http hosting via Microsoft Owin and HttpListener
-* Routing, model serialization, and binding by WebApi
-* Versioned Api routing
+* Http hosting via Microsoft Owin and HttpListener.
+  Run the service as an executable without relying on IIS.
+* Routing, model serialization, and binding by [WebApi](http://www.asp.net/web-api)
+* Versioned Api routing.  Api's change over time; keep the old Api available when adding or changing things.
 * Logging via [Serilog](https://github.com/serilog/serilog)
   * Each incoming request
   * Errors or warnings seen by WebApi or Owin

@@ -18,7 +18,7 @@ namespace WebApiTemplate.Test
     public static class WebApiTemplateTestServer
     {
         public static Task ServerAsync(
-            Func<IAppBuilder, Func<Task>, Task> startup,
+            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> startup,
             Func<TestServer, Task> serverWait)
         {
             return webapitmpl.Program.ServerAsync(
@@ -56,7 +56,7 @@ namespace WebApiTemplate.Test
                 .WriteTo.Console(outputTemplate: "{Timestamp:mm:ss:fff} [{Level}] {Message}{NewLine}{Exception}");
         }
 
-        private static async Task StandardCfg(IAppBuilder app, Func<Task> runServer)
+        private static async Task StandardCfg(IAppBuilder app, Func<IAppBuilder, Task> runServer)
         {
             var builder = new ContainerBuilder();
             builder
@@ -73,14 +73,14 @@ namespace WebApiTemplate.Test
                 var logger = container.Resolve<Serilog.ILogger>();
                 var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                var seq = new StartupSequencer()
-                {
-                    new OwinStartup(app, container),
-                    new LoggingStartup(app, logger),
-                    new WebApiStartup(app, httpConfig, container),
-                };
+                runServer = DelegatingServerFactory.CreateServer(
+                    runServer,
+                    new OwinStartup(container),
+                    new LoggingStartup(logger),
+                    new WebApiStartup(httpConfig, container)
+                    );
 
-                await seq.Execute(runServer);
+                await runServer(app);
             }
         }
     }

@@ -13,23 +13,21 @@ namespace webapitmpl.App_Start
     /// <summary>
     /// Augment the HttpConfiguration with routes for Swagger docs
     /// </summary>
-    internal class DocsStartup : IStartup
+    internal class DocsStartup : IDelegatingServer
     {
         private HttpConfiguration config;
-        private IAppBuilder app;
 
-        public DocsStartup(IAppBuilder app, HttpConfiguration config)
+        public DocsStartup(HttpConfiguration config)
         {
-            this.app = app;
             this.config = config;
         }
 
-        public Task Configuration(Func<Task> next)
+        public Task Start(IAppBuilder app, Func<IAppBuilder, Task> innerServer)
         {
             config
                 .EnableSwagger(ConfigureSwagger)
                 .EnableSwaggerUi(ConfigureSwaggerUI);
-            return next();
+            return innerServer(app);
         }
 
 

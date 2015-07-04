@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using Autofac;
@@ -36,11 +35,7 @@ namespace webapitmpl.Configuration
         /// When called, begins running requests and returns a Task indicating when
         /// requests will no longer be run.
         /// </param>
-        /// <returns>
-        /// Array of objects identifying the <see cref="T:Utility.IAppConfiguration" /> to run from
-        /// the container
-        /// </returns>
-        public async Task Configure(IAppBuilder app, Func<Task> runServer)
+        public async Task Start(IAppBuilder app, Func<IAppBuilder, Task> runServer)
         {
             var builder = new ContainerBuilder();
 
@@ -61,15 +56,15 @@ namespace webapitmpl.Configuration
                 var logger = container.Resolve<Serilog.ILogger>();
                 var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                var seq = new StartupSequencer
-                {
-                    new OwinStartup(app, container),
-                    new LoggingStartup(app, logger),
-                    new AuthStartup(app),
-                    new WebApiStartup(app, httpConfig, container)
-                };
+                runServer = DelegatingServerFactory.CreateServer(
+                    runServer,
+                    new OwinStartup(container),
+                    new LoggingStartup(logger),
+                    new AuthStartup(),
+                    new WebApiStartup(httpConfig, container)
+                    );
 
-                await seq.Execute(runServer);
+                await runServer(app);
             }
         }
 

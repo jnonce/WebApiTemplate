@@ -13,20 +13,18 @@ namespace webapitmpl.App_Start
     /// <summary>
     /// Starter which inserts WebApi into the Owin pipeline
     /// </summary>
-    internal class WebApiStartup : IStartup
+    internal class WebApiStartup : IDelegatingServer
     {
         private ILifetimeScope container;
         private HttpConfiguration config;
-        private IAppBuilder app;
 
-        public WebApiStartup(IAppBuilder app, HttpConfiguration config, ILifetimeScope madeContainer)
+        public WebApiStartup(HttpConfiguration config, ILifetimeScope madeContainer)
         {
-            this.app = app;
             this.config = config;
             this.container = madeContainer;
         }
 
-        public Task Configuration(Func<Task> next)
+        public Task Start(IAppBuilder app, Func<IAppBuilder, Task> innerServer)
         {
             // Enforce specific Json formatting
             config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Error;
@@ -46,7 +44,7 @@ namespace webapitmpl.App_Start
             // Place WebApi onto the Owin pipeline
             app.UseWebApi(config);
 
-            return next();
+            return innerServer(app);
         }
     }
 }

@@ -6,23 +6,21 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    internal class OwinStartup : IStartup
+    internal class OwinStartup : IDelegatingServer
     {
         private ILifetimeScope scope;
-        private IAppBuilder app;
         
-        public OwinStartup(IAppBuilder app, ILifetimeScope scope)
+        public OwinStartup(ILifetimeScope scope)
         {
-            this.app = app;
             this.scope = scope;
         }
 
-        public Task Configuration(Func<Task> next)
+        public Task Start(IAppBuilder app, Func<IAppBuilder, Task> innerServer)
         {
             // Setup a dependency scope per request, at the OWIN layer
             // Make IOwinContext available for use in a request
             app.UseAutofacMiddleware(scope);
-            return next();
+            return innerServer(app);
         }
     }
 }

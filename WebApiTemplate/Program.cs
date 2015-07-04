@@ -16,15 +16,15 @@ namespace webapitmpl
             cfg.Configure(options);
 
             Task serverExecution = ServerAsync(
-                cfgMethod => WebApp.Start(options, cfgMethod),
-                cfg.Configure,
-                _ => GetConsoleCancel());
+                webAppStart: cfgMethod => WebApp.Start(options, cfgMethod),
+                delegatingServer: cfg.Start,
+                serverWait: _ => GetConsoleCancel());
             serverExecution.Wait();
         }
 
         internal static async Task ServerAsync<TServer>(
-            Func<Action<IAppBuilder>, TServer> startServer,
-            Func<IAppBuilder, Func<Task>, Task> startup,
+            Func<Action<IAppBuilder>, TServer> webAppStart,
+            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> delegatingServer,
             Func<TServer, Task> serverWait)
             where TServer : IDisposable
         {
@@ -32,17 +32,17 @@ namespace webapitmpl
             var serverFinished = new TaskCompletionSource<bool>();
 
             // Task completes when Configuration says we're ready
-            var serverReadyToStart = new TaskCompletionSource<bool>();
+            var serverReadyToStart = new TaskCompletionSource<IAppBuilder>();
 
             // Task completes when startup/shutdown is finished
             Task configLifecycle = null;
 
             // Method which, when called sets a flag indicating the server is ready to process requests
             // Returns a task which indicates when the server is finished processing requests
-            Func<Task> markServerReadyToStart =
-                () =>
+            Func<IAppBuilder, Task> markServerReadyToStart =
+                passedDownApp =>
                 {
-                    serverReadyToStart.SetResult(true);
+                    serverReadyToStart.SetResult(passedDownApp);
                     return serverFinished.Task;
                 };
 
@@ -51,7 +51,7 @@ namespace webapitmpl
                 app =>
                 {
                     // Call the startup method.
-                    configLifecycle = startup(app, markServerReadyToStart);
+                    configLifecycle = delegatingServer(app, markServerReadyToStart);
 
                     // Wait for serverReadyToStart.
                     // Handle the case where serverReadyToStart is never achieved but configLifecycle completes
@@ -64,7 +64,7 @@ namespace webapitmpl
                 };
 
             // startServer calls WebApp.Start...
-            using (TServer server = startServer(configureWebApp))
+            using (TServer server = webAppStart(configureWebApp))
             {
                 await serverWait(server);
             }

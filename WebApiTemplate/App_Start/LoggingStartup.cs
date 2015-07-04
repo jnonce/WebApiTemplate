@@ -9,18 +9,16 @@ using webapitmpl.Utility;
 
 namespace webapitmpl.App_Start
 {
-    internal class LoggingStartup : IStartup
+    internal class LoggingStartup : IDelegatingServer
     {
         private Serilog.ILogger logger;
-        private IAppBuilder app;
 
-        public LoggingStartup(IAppBuilder app, Serilog.ILogger logger)
+        public LoggingStartup(Serilog.ILogger logger)
         {
-            this.app = app;
             this.logger = logger;
         }
 
-        public async Task Configuration(Func<Task> next)
+        public async Task Start(IAppBuilder app, Func<IAppBuilder, Task> innerServer)
         {
             // Register Owin logging
             app.UseSerilogRequestContext();
@@ -34,7 +32,7 @@ namespace webapitmpl.App_Start
             // Initial log
             logger.Information("Server Started");
 
-            await next();
+            await innerServer(app);
 
             logger.Information("Server Stopped");
         }

@@ -147,14 +147,14 @@
     <Compile Include="Utility\AutofacFluentValidatorFactory.cs" />
     <Compile Include="Utility\CorrelationIdAppBuilderExtensions.cs" />
     <Compile Include="Utility\CorrelationIdOwinContextExtensions.cs" />
-    <Compile Include="Utility\IStartup.cs" />
+    <Compile Include="Utility\IDelegatingServer.cs" />
     <Compile Include="Utility\SerilogWebApiTraceWriter.cs" />
     <Compile Include="Utility\LevelFromTypeLogEventFilter.cs" />
     <Compile Include="Configuration\ServiceConfiguration.cs" />
     <Compile Include="Controllers\DemoController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Providers\DemoProvider.cs" />
-    <Compile Include="Utility\StartupSequencer.cs" />
+    <Compile Include="Utility\DelegatingServerFactory.cs" />
     <Compile Include="Utility\ValidateModelAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

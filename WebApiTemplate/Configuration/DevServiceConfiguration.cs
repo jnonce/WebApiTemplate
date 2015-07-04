@@ -22,7 +22,7 @@ namespace webapitmpl.Configuration
             startOptions.Urls.Add("http://localhost:8999");
         }
 
-        public async Task Configure(IAppBuilder app, Func<Task> runServer)
+        public async Task Start(IAppBuilder app, Func<IAppBuilder, Task> runServer)
         {
             var builder = new ContainerBuilder();
 
@@ -47,16 +47,16 @@ namespace webapitmpl.Configuration
                 var logger = container.Resolve<Serilog.ILogger>();
                 var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                var seq = new StartupSequencer()
-                {
-                    new OwinStartup(app, container),
-                    new LoggingStartup(app, logger),
-                    new AuthStartup(app),
-                    new WebApiStartup(app, httpConfig, container),
-                    new DocsStartup(app, httpConfig),
-                };
+                runServer = DelegatingServerFactory.CreateServer(
+                    runServer,
+                    new OwinStartup(container),
+                    new LoggingStartup(logger),
+                    new AuthStartup(),
+                    new WebApiStartup(httpConfig, container),
+                    new DocsStartup(httpConfig)
+                    );
                 
-                await seq.Execute(runServer);
+                await runServer(app);
             }
         }
 

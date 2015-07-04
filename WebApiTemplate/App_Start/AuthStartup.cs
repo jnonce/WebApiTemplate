@@ -9,26 +9,12 @@ namespace webapitmpl.App_Start
     /// <summary>
     /// Starter for authentication
     /// </summary>
-    public class AuthStartup : IStartup
+    internal class AuthStartup : IDelegatingServer
     {
-        private IAppBuilder app;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AuthStartup"/> class.
-        /// </summary>
-        /// <param name="app">The Owin application.</param>
-        public AuthStartup(IAppBuilder app)
-        {
-            this.app = app;
-        }
-
-        /// <summary>
-        /// Configurations the application.
-        /// </summary>
-        public Task Configuration(Func<Task> next)
+        public Task Start(IAppBuilder app, Func<IAppBuilder, Task> innerServer)
         {
             app.UseCors(CorsOptions.AllowAll);
-            return next();
+            return innerServer(app);
         }
     }
 }

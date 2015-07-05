@@ -11,29 +11,28 @@ using webapitmpl.Utility;
 
 namespace WebApiTemplate.Test
 {
-
     /// <summary>
     /// Utility methods to setup a test server
     /// </summary>
     public static class WebApiTemplateTestServer
     {
-        public static Task ServerAsync(
-            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> startup,
-            Func<TestServer, Task> serverWait)
+        public static TestServer CreateServer(Func<IAppBuilder, Func<IAppBuilder, Task>, Task> server)
         {
-            return webapitmpl.Program.ServerAsync(
-                TestServer.Create,
-                startup,
-                serverWait);
+            return TestServer.Create(
+                app =>
+                {
+                    var startup = new webapitmpl.Utility.DelegatingServerStartup()
+                    {
+                        DelegatingServer = DelegatingServerFactory.Create(server)
+                    };
+
+                    startup.Configuration(app);
+                });
         }
 
-        public static Task ServerAsync(
-            Func<TestServer, Task> serverWait)
+        public static TestServer CreateServer()
         {
-            return webapitmpl.Program.ServerAsync(
-                TestServer.Create,
-                StandardCfg,
-                serverWait);
+            return CreateServer(StandardStart);
         }
 
         public static LoggerConfiguration ConfigureStdLogging(LoggerConfiguration config)
@@ -56,7 +55,7 @@ namespace WebApiTemplate.Test
                 .WriteTo.Console(outputTemplate: "{Timestamp:mm:ss:fff} [{Level}] {Message}{NewLine}{Exception}");
         }
 
-        private static async Task StandardCfg(IAppBuilder app, Func<IAppBuilder, Task> runServer)
+        private static async Task StandardStart(IAppBuilder app, Func<IAppBuilder, Task> innerServer)
         {
             var builder = new ContainerBuilder();
             builder
@@ -73,12 +72,11 @@ namespace WebApiTemplate.Test
                 var logger = container.Resolve<Serilog.ILogger>();
                 var httpConfig = container.Resolve<System.Web.Http.HttpConfiguration>();
 
-                runServer = DelegatingServerFactory.CreateServer(
-                    runServer,
+                var runServer = DelegatingServerFactory.CreateServer(
+                    innerServer,
                     new OwinStartup(container),
                     new LoggingStartup(logger),
-                    new WebApiStartup(httpConfig, container)
-                    );
+                    new WebApiStartup(httpConfig, container));
 
                 await runServer(app);
             }

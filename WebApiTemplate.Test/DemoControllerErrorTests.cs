@@ -19,18 +19,17 @@ namespace WebApiTemplate.Test
         [TestMethod]
         public async Task TestError()
         {
-            await WebApiTemplateTestServer.ServerAsync(
-                async server =>
-                {
-                    HttpResponseMessage response = await GetFailureResponse(server);
+            using (var server = WebApiTemplateTestServer.CreateServer())
+            {
+                HttpResponseMessage response = await GetFailureResponse(server);
 
-                    Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+                Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
 
-                    var errorInfo = await response.Content.ReadAsAsync<HttpError>();
-                    Assert.IsNull(errorInfo.ExceptionMessage);
-                    Assert.IsNull(errorInfo.ExceptionType);
-                    Assert.IsNull(errorInfo.StackTrace);
-                });
+                var errorInfo = await response.Content.ReadAsAsync<HttpError>();
+                Assert.IsNull(errorInfo.ExceptionMessage);
+                Assert.IsNull(errorInfo.ExceptionType);
+                Assert.IsNull(errorInfo.StackTrace);
+            }
         }
 
         [TestMethod]
@@ -42,18 +41,17 @@ namespace WebApiTemplate.Test
                     config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
                 };
 
-            await WebApiTemplateTestServer.ServerAsync(
-                async server =>
-                {
-                    HttpResponseMessage response = await GetFailureResponse(server);
+            using (var server = WebApiTemplateTestServer.CreateServer())
+            {
+                HttpResponseMessage response = await GetFailureResponse(server);
 
-                    Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+                Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
 
-                    var errorInfo = await response.Content.ReadAsAsync<HttpError>();
-                    Assert.IsNotNull(errorInfo.ExceptionMessage);
-                    Assert.IsNotNull(errorInfo.ExceptionType);
-                    Assert.IsNotNull(errorInfo.StackTrace);
-                });
+                var errorInfo = await response.Content.ReadAsAsync<HttpError>();
+                Assert.IsNotNull(errorInfo.ExceptionMessage);
+                Assert.IsNotNull(errorInfo.ExceptionType);
+                Assert.IsNotNull(errorInfo.StackTrace);
+            }
         }
 
         private static Task<HttpResponseMessage> GetFailureResponse(TestServer server)

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Threading;
 using Microsoft.Owin.Hosting;
-using Owin;
 using webapitmpl.Configuration;
+using webapitmpl.Utility;
 
 namespace webapitmpl
 {
@@ -15,77 +15,32 @@ namespace webapitmpl
             StartOptions options = new StartOptions();
             cfg.Configure(options);
 
-            Task serverExecution = ServerAsync(
-                webAppStart: cfgMethod => WebApp.Start(options, cfgMethod),
-                delegatingServer: cfg.Start,
-                serverWait: _ => GetConsoleCancel());
-            serverExecution.Wait();
-        }
-
-        internal static async Task ServerAsync<TServer>(
-            Func<Action<IAppBuilder>, TServer> webAppStart,
-            Func<IAppBuilder, Func<IAppBuilder, Task>, Task> delegatingServer,
-            Func<TServer, Task> serverWait)
-            where TServer : IDisposable
-        {
-            // Task completes when server shuts down
-            var serverFinished = new TaskCompletionSource<bool>();
-
-            // Task completes when Configuration says we're ready
-            var serverReadyToStart = new TaskCompletionSource<IAppBuilder>();
-
-            // Task completes when startup/shutdown is finished
-            Task configLifecycle = null;
-
-            // Method which, when called sets a flag indicating the server is ready to process requests
-            // Returns a task which indicates when the server is finished processing requests
-            Func<IAppBuilder, Task> markServerReadyToStart =
-                passedDownApp =>
-                {
-                    serverReadyToStart.SetResult(passedDownApp);
-                    return serverFinished.Task;
-                };
-
-            // Define a method to configure the web application
-            Action<IAppBuilder> configureWebApp =
+            using (WebApp.Start(
+                options,
                 app =>
                 {
-                    // Call the startup method.
-                    configLifecycle = delegatingServer(app, markServerReadyToStart);
-
-                    // Wait for serverReadyToStart.
-                    // Handle the case where serverReadyToStart is never achieved but configLifecycle completes
-                    int index = Task.WaitAny(serverReadyToStart.Task, configLifecycle);
-                    if (index != 0)
+                    var startup = new DelegatingServerStartup()
                     {
-                        configLifecycle.Wait();
-                        throw new OperationCanceledException();
-                    }
-                };
+                        DelegatingServer = cfg
+                    };
 
-            // startServer calls WebApp.Start...
-            using (TServer server = webAppStart(configureWebApp))
+                    startup.Configuration(app);
+                }))
             {
-                await serverWait(server);
-            }
-
-            if (configLifecycle != null)
-            {
-                serverFinished.SetResult(true);
-                await configLifecycle;
+                WaitForConsoleCancel();
             }
         }
 
-        private static Task GetConsoleCancel()
+        private static void WaitForConsoleCancel()
         {
-            var complete = new TaskCompletionSource<object>();
+            var complete = new ManualResetEvent(false);
             Console.CancelKeyPress += new ConsoleCancelEventHandler(
                 (sender, e) =>
                 {
                     e.Cancel = true;
-                    complete.SetResult(null);
+                    complete.Set();
                 });
-            return complete.Task;
+            complete.WaitOne();
         }
     }
 }

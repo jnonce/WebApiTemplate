@@ -133,6 +133,7 @@
     <Compile Include="App_Start\OwinStartup.cs" />
     <Compile Include="App_Start\DocsStartup.cs" />
     <Compile Include="App_Start\ProviderServicesModule.cs" />
+    <Compile Include="Utility\DelegatingServerStartup.cs" />
     <Compile Include="App_Start\WebApiServicesModule.cs" />
     <Compile Include="App_Start\WebApiStartup.cs" />
     <Compile Include="Configuration\DevServiceConfiguration.cs" />

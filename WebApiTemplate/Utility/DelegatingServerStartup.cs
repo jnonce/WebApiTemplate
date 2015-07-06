@@ -27,7 +27,7 @@ namespace webapitmpl.Utility
             IDelegatingServer server = GetDelegatingServer(app);
 
             // Event triggered when the server should start taking requests.
-            var readyForRequests = new ManualResetEvent(false);
+            var readyForRequests = new TaskCompletionSource<IAppBuilder>();
 
             // Task which tracks the lifespan of the inner server.
             var serverComplete = new TaskCompletionSource<bool>();
@@ -38,26 +38,36 @@ namespace webapitmpl.Utility
                 {
                     if (passedApp != app)
                     {
-                        return Task.FromResult<object>(null);
+                        throw new ArgumentException("app");
                     }
-                    else
-                    {
-                        readyForRequests.Set();
-                        return serverComplete.Task;
-                    }
+
+                    readyForRequests.TrySetResult(passedApp);
+                    return serverComplete.Task;
                 });
 
             // Wait for the delegating server to respond and allow incoming requests
-            readyForRequests.WaitOne();
+            if (Task.WaitAny(readyForRequests.Task, shutdownComplete) == 1)
+            {
+                // If the delegating server completed without allowing incoming requests
+                // Then AppStart needs to terminate.  Allow exception trapped by the task
+                // to bubble out, otherwise throw an error of our own.
+                shutdownComplete.Wait();
+                throw new OperationCanceledException();
+            }
 
+            //
             // Register a tracker for app disposing.
             // When this happens, allow the delegating server to shutdown and wait for it to do so.
-            app.RegisterAppDisposing(
-                () =>
-                {
-                    serverComplete.SetResult(true);
-                    shutdownComplete.Wait();
-                });
+            CancellationToken token;
+            if (TryGetCancellationToken(app, out token))
+            {
+                token.Register(
+                    () =>
+                    {
+                        serverComplete.SetResult(true);
+                        shutdownComplete.Wait();
+                    });
+            }
         }
 
         private IDelegatingServer GetDelegatingServer(IAppBuilder app)
@@ -81,6 +91,23 @@ namespace webapitmpl.Utility
             }
 
             throw new InvalidOperationException();
+        }
+
+        // Retrieve the cancellation token indicating when the IAppBuilder's host is terminating
+        private static bool TryGetCancellationToken(IAppBuilder app, out CancellationToken token)
+        {
+            object o;
+            if (app.Properties.TryGetValue("host.OnAppDisposing", out o)
+                && o is CancellationToken)
+            {
+                token = (CancellationToken)o;
+                return true;
+            }
+            else
+            {
+                token = CancellationToken.None;
+                return false;
+            }
         }
     }
 }
